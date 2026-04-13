@@ -1,6 +1,6 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════════════════════════
-# Memory Palace Server - Serve o visualizador 3D
+# Memory Palace Server - Serve o visualizador 3D com CORS
 # ═══════════════════════════════════════════════════════════════════════════════
 
 set -e
@@ -28,19 +28,40 @@ if [ ! -d "$DIR" ]; then
     exit 1
 fi
 
-# Check for Python (works everywhere)
-if command -v python3 &> /dev/null; then
-    echo -e "${GREEN}→ Iniciando servidor em http://localhost:$PORT${NC}"
-    echo -e "${CYAN}Pressione Ctrl+C para parar${NC}"
-    echo ""
-    cd "$DIR"
-    python3 -m http.server "$PORT"
-elif command -v python &> /dev/null; then
-    echo -e "${GREEN}→ Iniciando servidor em http://localhost:$PORT${NC}"
-    cd "$DIR"
-    python -m SimpleHTTPServer "$PORT"
-else
-    echo -e "${RED}✗ Python não encontrado${NC}"
-    echo "Instale Python para usar o servidor"
+# Check for Python
+if ! command -v python3 &> /dev/null; then
+    echo -e "${RED}✗ Python3 não encontrado${NC}"
+    echo "Instale Python3 para usar o servidor"
     exit 1
 fi
+
+echo -e "${GREEN}→ Iniciando servidor em http://localhost:$PORT${NC}"
+echo -e "${CYAN}Pressione Ctrl+C para parar${NC}"
+echo ""
+echo -e "Abra no navegador: http://localhost:$PORT/index.html"
+echo ""
+
+cd "$DIR"
+
+# Run Python server with CORS handler
+python3 -c "
+import http.server
+import socketserver
+import json
+
+class CORSRequestHandler(http.server.SimpleHTTPRequestHandler):
+    def end_headers(self):
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', '*')
+        self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate')
+        super().end_headers()
+    
+    def log_message(self, format, *args):
+        pass  # Silencia logs
+
+PORT = $PORT
+with socketserver.TCPServer(('', PORT), CORSRequestHandler) as httpd:
+    print(f'Servidor rodando em http://localhost:{PORT}')
+    httpd.serve_forever()
+"

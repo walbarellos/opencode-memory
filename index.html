@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Willian's Memory Palace | Neural Network Visualizer</title>
+    <title>Memory Palace - Neural Network Visualizer</title>
     
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Fonts (fallback to system if unavailable) -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <!-- Three.js -->
@@ -15,16 +13,12 @@
     
     <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     
-    <!-- D3.js for physics -->
+    <!-- D3.js -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     
     <!-- Particles.js -->
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-    
-    <!-- Phosphor Icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     
     <style>
         :root {
@@ -35,7 +29,6 @@
             --accent-orange: #ff6b35;
             --accent-red: #ff3366;
             --accent-blue: #00bbf9;
-            --accent-cyan: #00f5d4;
             --accent-green: #00ff87;
             
             --bg-dark: #0a0a0f;
@@ -49,10 +42,10 @@
             
             --glow-primary: 0 0 20px rgba(0, 245, 212, 0.5);
             --glow-secondary: 0 0 20px rgba(155, 93, 229, 0.5);
-            --glow-pink: 0 0 20px rgba(241, 91, 181, 0.5);
             
-            --border-radius: 16px;
-            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-display: 'Orbitron', 'Segoe UI', system-ui, sans-serif;
+            --font-body: 'Rajdhani', 'Segoe UI', system-ui, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Consolas', monospace;
         }
 
         * {
@@ -61,19 +54,15 @@
             box-sizing: border-box;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
         body {
-            font-family: 'Rajdhani', sans-serif;
+            font-family: var(--font-body);
             background: var(--bg-darker);
             color: var(--text-primary);
             overflow: hidden;
             min-height: 100vh;
         }
 
-        /* Animated Background */
+        /* Background Effects */
         #particles-js {
             position: fixed;
             top: 0;
@@ -84,7 +73,6 @@
             pointer-events: none;
         }
 
-        /* Grid Background */
         .grid-bg {
             position: fixed;
             top: 0;
@@ -99,34 +87,14 @@
             pointer-events: none;
         }
 
-        /* Scanline Effect */
-        .scanlines {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                rgba(0, 0, 0, 0.1) 2px,
-                rgba(0, 0, 0, 0.1) 4px
-            );
-            pointer-events: none;
-            z-index: 9999;
-            opacity: 0.3;
-        }
-
         /* Main Layout */
         .app-container {
             position: relative;
             z-index: 10;
             display: grid;
-            grid-template-columns: 320px 1fr 320px;
-            grid-template-rows: 80px 1fr;
+            grid-template-columns: 300px 1fr 300px;
+            grid-template-rows: 70px 1fr;
             height: 100vh;
-            gap: 0;
         }
 
         /* Header */
@@ -135,7 +103,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 40px;
+            padding: 0 30px;
             background: linear-gradient(180deg, rgba(10, 10, 15, 0.95) 0%, transparent 100%);
             border-bottom: 1px solid rgba(0, 245, 212, 0.1);
             backdrop-filter: blur(20px);
@@ -144,30 +112,24 @@
         .logo {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
         }
 
         .logo-icon {
-            width: 50px;
-            height: 50px;
+            width: 44px;
+            height: 44px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 22px;
             box-shadow: var(--glow-primary);
-            animation: pulse-glow 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 20px rgba(0, 245, 212, 0.5); }
-            50% { box-shadow: 0 0 40px rgba(0, 245, 212, 0.8), 0 0 60px rgba(155, 93, 229, 0.4); }
         }
 
         .logo-text h1 {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.4rem;
+            font-family: var(--font-display);
+            font-size: 1.2rem;
             font-weight: 700;
             background: linear-gradient(90deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
@@ -177,50 +139,10 @@
         }
 
         .logo-text p {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             text-transform: uppercase;
-        }
-
-        /* Navigation */
-        .nav-center {
-            display: flex;
-            gap: 8px;
-        }
-
-        .nav-btn {
-            background: var(--bg-glass);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 10px 20px;
-            border-radius: 30px;
-            color: var(--text-secondary);
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .nav-btn:hover, .nav-btn.active {
-            background: rgba(0, 245, 212, 0.1);
-            border-color: var(--primary);
-            color: var(--primary);
-            box-shadow: var(--glow-primary);
-        }
-
-        .nav-btn i {
-            font-size: 1.1rem;
-        }
-
-        /* Header Right */
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 20px;
         }
 
         .search-container {
@@ -230,38 +152,32 @@
         .search-input {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 12px 20px 12px 45px;
-            border-radius: 30px;
+            padding: 10px 18px 10px 42px;
+            border-radius: 25px;
             color: var(--text-primary);
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1rem;
-            width: 280px;
-            transition: var(--transition);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            width: 260px;
+            transition: all 0.3s;
         }
 
         .search-input:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: var(--glow-primary);
-            background: rgba(0, 245, 212, 0.05);
-        }
-
-        .search-input::placeholder {
-            color: var(--text-muted);
         }
 
         .search-icon {
             position: absolute;
-            left: 18px;
+            left: 16px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-muted);
-            font-size: 1.1rem;
         }
 
         .stats-bar {
             display: flex;
-            gap: 24px;
+            gap: 20px;
         }
 
         .stat-item {
@@ -269,38 +185,38 @@
         }
 
         .stat-value {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.5rem;
+            font-family: var(--font-display);
+            font-size: 1.3rem;
             font-weight: 700;
             color: var(--primary);
             text-shadow: var(--glow-primary);
         }
 
         .stat-label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
-        /* Left Panel - Categories */
+        /* Left Panel */
         .left-panel {
             background: linear-gradient(90deg, rgba(10, 10, 15, 0.98) 0%, transparent 100%);
-            padding: 30px 20px;
+            padding: 25px 15px;
             overflow-y: auto;
             border-right: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .panel-title {
-            font-family: 'Orbitron', monospace;
-            font-size: 0.8rem;
+            font-family: var(--font-display);
+            font-size: 0.7rem;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 24px;
+            letter-spacing: 2px;
+            margin-bottom: 18px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .panel-title::after {
@@ -313,16 +229,16 @@
         .category-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         .category-item {
             background: var(--bg-glass);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: var(--border-radius);
-            padding: 16px;
+            border-radius: 12px;
+            padding: 14px;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 0.3s;
             position: relative;
             overflow: hidden;
         }
@@ -332,71 +248,46 @@
             position: absolute;
             left: 0;
             top: 0;
-            width: 4px;
+            width: 3px;
             height: 100%;
             background: var(--category-color);
-            transition: var(--transition);
         }
 
         .category-item:hover, .category-item.active {
             background: rgba(var(--category-rgb), 0.1);
             border-color: var(--category-color);
-            transform: translateX(8px);
-            box-shadow: 0 0 30px rgba(var(--category-rgb), 0.2);
-        }
-
-        .category-item:hover::before, .category-item.active::before {
-            width: 6px;
-            box-shadow: var(--glow-primary);
+            transform: translateX(5px);
         }
 
         .category-header {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 8px;
+            gap: 10px;
         }
 
         .category-icon {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             background: rgba(var(--category-rgb), 0.2);
-            border-radius: 10px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
-            color: var(--category-color);
+            font-size: 1.1rem;
         }
 
         .category-name {
-            font-family: 'Orbitron', monospace;
-            font-size: 0.9rem;
+            font-family: var(--font-display);
+            font-size: 0.85rem;
             font-weight: 600;
-            color: var(--text-primary);
         }
 
         .category-count {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
         }
 
-        .category-bar {
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .category-progress {
-            height: 100%;
-            background: var(--category-color);
-            border-radius: 2px;
-            transition: width 1s ease-out;
-            box-shadow: 0 0 10px var(--category-color);
-        }
-
-        /* 3D Canvas Container */
+        /* Canvas */
         .canvas-container {
             position: relative;
             background: radial-gradient(ellipse at center, rgba(0, 245, 212, 0.05) 0%, transparent 70%);
@@ -408,54 +299,10 @@
             display: block;
         }
 
-        /* Canvas Overlay Controls */
-        .canvas-controls {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 12px;
-            padding: 12px;
-            background: rgba(10, 10, 15, 0.8);
-            backdrop-filter: blur(20px);
-            border-radius: 50px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .control-btn {
-            width: 50px;
-            height: 50px;
-            background: var(--bg-glass);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            color: var(--text-secondary);
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .control-btn:hover {
-            background: rgba(0, 245, 212, 0.1);
-            border-color: var(--primary);
-            color: var(--primary);
-            transform: scale(1.1);
-            box-shadow: var(--glow-primary);
-        }
-
-        .control-btn.active {
-            background: var(--primary);
-            color: var(--bg-dark);
-            border-color: var(--primary);
-        }
-
-        /* Right Panel - Details */
+        /* Right Panel */
         .right-panel {
             background: linear-gradient(-90deg, rgba(10, 10, 15, 0.98) 0%, transparent 100%);
-            padding: 30px 20px;
+            padding: 25px 15px;
             overflow-y: auto;
             border-left: 1px solid rgba(255, 255, 255, 0.05);
         }
@@ -463,87 +310,71 @@
         .detail-card {
             background: var(--bg-glass);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: var(--border-radius);
-            padding: 24px;
-            margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .detail-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 15px;
         }
 
         .detail-header {
             display: flex;
             align-items: center;
-            gap: 16px;
-            margin-bottom: 20px;
+            gap: 14px;
+            margin-bottom: 15px;
         }
 
         .detail-node-icon {
-            width: 60px;
-            height: 60px;
+            width: 52px;
+            height: 52px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 16px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
-            box-shadow: var(--glow-primary);
+            font-size: 1.5rem;
         }
 
         .detail-title {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.3rem;
+            font-family: var(--font-display);
+            font-size: 1.1rem;
             font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 4px;
         }
 
         .detail-subtitle {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
         }
 
         .detail-description {
             color: var(--text-secondary);
-            line-height: 1.8;
-            font-size: 1rem;
-            margin-bottom: 24px;
+            line-height: 1.7;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
         }
 
         .detail-section-title {
-            font-family: 'Orbitron', monospace;
-            font-size: 0.7rem;
+            font-family: var(--font-display);
+            font-size: 0.65rem;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 12px;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
         }
 
         .connections-list {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 20px;
+            gap: 6px;
+            margin-bottom: 15px;
         }
 
         .connection-tag {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            transition: var(--transition);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
             cursor: pointer;
+            transition: all 0.3s;
         }
 
         .connection-tag:hover {
@@ -555,17 +386,17 @@
         .tags-list {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px;
         }
 
         .tag {
             background: rgba(0, 245, 212, 0.1);
             border: 1px solid rgba(0, 245, 212, 0.3);
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.75rem;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-family: var(--font-mono);
             color: var(--primary);
-            font-family: 'JetBrains Mono', monospace;
         }
 
         /* Empty State */
@@ -576,32 +407,61 @@
             justify-content: center;
             height: 100%;
             text-align: center;
-            padding: 40px;
+            padding: 30px;
         }
 
         .empty-icon {
-            font-size: 4rem;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+            font-size: 3.5rem;
+            margin-bottom: 15px;
         }
 
         .empty-title {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.2rem;
+            font-family: var(--font-display);
+            font-size: 1rem;
             color: var(--text-secondary);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .empty-text {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
-            max-width: 200px;
+            max-width: 180px;
+        }
+
+        /* Canvas Controls */
+        .canvas-controls {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .control-btn {
+            width: 44px;
+            height: 44px;
+            background: var(--bg-glass);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-btn:hover {
+            background: rgba(0, 245, 212, 0.1);
+            border-color: var(--primary);
+            color: var(--primary);
         }
 
         /* Tooltip */
@@ -610,15 +470,14 @@
             background: rgba(10, 10, 15, 0.95);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(0, 245, 212, 0.3);
-            border-radius: var(--border-radius);
-            padding: 16px;
-            max-width: 280px;
+            border-radius: 12px;
+            padding: 14px;
+            max-width: 260px;
             pointer-events: none;
             z-index: 1000;
             opacity: 0;
-            transform: translateY(10px);
-            transition: opacity 0.3s, transform 0.3s;
-            box-shadow: 0 0 40px rgba(0, 245, 212, 0.2);
+            transform: translateY(8px);
+            transition: opacity 0.2s, transform 0.2s;
         }
 
         .node-tooltip.visible {
@@ -627,23 +486,53 @@
         }
 
         .tooltip-title {
-            font-family: 'Orbitron', monospace;
-            font-size: 0.95rem;
+            font-family: var(--font-display);
+            font-size: 0.9rem;
             font-weight: 600;
             color: var(--primary);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            margin-bottom: 6px;
         }
 
         .tooltip-desc {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-secondary);
-            line-height: 1.5;
         }
 
-        /* Loading Screen */
+        /* Mode Toggle */
+        .mode-toggle {
+            position: fixed;
+            top: 90px;
+            right: 25px;
+            z-index: 100;
+        }
+
+        .toggle-container {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 25px;
+            padding: 3px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .toggle-btn {
+            padding: 8px 14px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 22px;
+            transition: all 0.3s;
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--bg-dark);
+        }
+
+        /* Loading */
         .loading-screen {
             position: fixed;
             top: 0;
@@ -656,7 +545,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.8s, visibility 0.8s;
+            transition: opacity 0.6s, visibility 0.6s;
         }
 
         .loading-screen.hidden {
@@ -665,27 +554,26 @@
         }
 
         .loading-logo {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 30px;
+            border-radius: 25px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 60px;
-            margin-bottom: 40px;
-            animation: pulse-scale 1.5s ease-in-out infinite;
-            box-shadow: 0 0 60px rgba(0, 245, 212, 0.5);
+            font-size: 50px;
+            margin-bottom: 30px;
+            animation: pulse 1.5s ease-in-out infinite;
         }
 
-        @keyframes pulse-scale {
+        @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.1); }
         }
 
         .loading-bar-container {
-            width: 300px;
-            height: 4px;
+            width: 250px;
+            height: 3px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 2px;
             overflow: hidden;
@@ -695,104 +583,34 @@
             height: 100%;
             background: linear-gradient(90deg, var(--primary), var(--secondary));
             border-radius: 2px;
-            animation: loading 2s ease-in-out infinite;
+            animation: loading 1.5s ease-in-out infinite;
         }
 
         @keyframes loading {
-            0% { width: 0%; margin-left: 0%; }
-            50% { width: 70%; margin-left: 15%; }
-            100% { width: 0%; margin-left: 100%; }
-        }
-
-        .loading-text {
-            font-family: 'Orbitron', monospace;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-top: 20px;
-            letter-spacing: 3px;
+            0% { width: 0; margin-left: 0; }
+            50% { width: 60%; margin-left: 20%; }
+            100% { width: 0; margin-left: 100%; }
         }
 
         /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary);
-        }
-
-        /* Responsive */
-        @media (max-width: 1200px) {
-            .app-container {
-                grid-template-columns: 1fr;
-            }
-            .left-panel, .right-panel {
-                display: none;
-            }
-        }
-
-        /* Mode Toggle */
-        .mode-toggle {
-            position: fixed;
-            top: 100px;
-            right: 30px;
-            z-index: 100;
-        }
-
-        .toggle-container {
-            display: flex;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 30px;
-            padding: 4px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .toggle-btn {
-            padding: 10px 16px;
-            border: none;
-            background: transparent;
-            color: var(--text-muted);
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 26px;
-            transition: var(--transition);
-        }
-
-        .toggle-btn.active {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: var(--bg-dark);
-        }
-
-        /* 2D/3D Mode */
-        .view-mode-3d #network-canvas-2d { display: none; }
-        .view-mode-2d #network-canvas-3d { display: none; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 2px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
     </style>
 </head>
 <body>
-    <!-- Loading Screen -->
+    <!-- Loading -->
     <div class="loading-screen" id="loading">
         <div class="loading-logo">🧠</div>
         <div class="loading-bar-container">
             <div class="loading-bar"></div>
         </div>
-        <div class="loading-text">INITIALIZING MEMORY PALACE</div>
     </div>
 
-    <!-- Background Effects -->
+    <!-- Background -->
     <div id="particles-js"></div>
     <div class="grid-bg"></div>
-    <div class="scanlines"></div>
 
     <!-- Mode Toggle -->
     <div class="mode-toggle">
@@ -802,81 +620,49 @@
         </div>
     </div>
 
-    <!-- Main App -->
-    <div class="app-container view-mode-3d">
-        <!-- Header -->
+    <!-- App -->
+    <div class="app-container">
         <header class="header">
             <div class="logo">
                 <div class="logo-icon">🏛️</div>
                 <div class="logo-text">
                     <h1>MEMORY PALACE</h1>
-                    <p>Neural Network Visualizer</p>
+                    <p>Neural Visualizer</p>
                 </div>
             </div>
-
-            <nav class="nav-center">
-                <button class="nav-btn active"><i class="ph-fill ph-brain"></i> Network</button>
-                <button class="nav-btn"><i class="ph ph-list-bullets"></i> List</button>
-                <button class="nav-btn"><i class="ph ph-chart-pie"></i> Stats</button>
-                <button class="nav-btn"><i class="ph ph-gear"></i> Settings</button>
-            </nav>
-
-            <div class="header-right">
-                <div class="search-container">
-                    <i class="ph ph-magnifying-glass search-icon"></i>
-                    <input type="text" class="search-input" id="search" placeholder="Search memories...">
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" id="search" placeholder="Search memories...">
+            </div>
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-value" id="node-count">0</div>
+                    <div class="stat-label">Nodes</div>
                 </div>
-                <div class="stats-bar">
-                    <div class="stat-item">
-                        <div class="stat-value" id="node-count">0</div>
-                        <div class="stat-label">Nodes</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="link-count">0</div>
-                        <div class="stat-label">Links</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="category-count">0</div>
-                        <div class="stat-label">Categories</div>
-                    </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="link-count">0</div>
+                    <div class="stat-label">Links</div>
                 </div>
             </div>
         </header>
 
-        <!-- Left Panel - Categories -->
         <aside class="left-panel">
             <div class="panel-title">Categories</div>
-            <div class="category-list" id="category-list">
-                <!-- Categories will be populated by JS -->
-            </div>
+            <div class="category-list" id="category-list"></div>
         </aside>
 
-        <!-- Canvas Container -->
         <main class="canvas-container">
             <canvas id="network-canvas-3d"></canvas>
             <svg id="network-canvas-2d"></svg>
             
-            <!-- Canvas Controls -->
             <div class="canvas-controls">
-                <button class="control-btn" id="btn-zoom-in" title="Zoom In">
-                    <i class="ph-bold ph-plus"></i>
-                </button>
-                <button class="control-btn" id="btn-zoom-out" title="Zoom Out">
-                    <i class="ph-bold ph-minus"></i>
-                </button>
-                <button class="control-btn" id="btn-reset" title="Reset View">
-                    <i class="ph-bold ph-arrows-out"></i>
-                </button>
-                <button class="control-btn" id="btn-center" title="Center">
-                    <i class="ph-bold ph-crosshair"></i>
-                </button>
-                <button class="control-btn" id="btn-auto-rotate" title="Auto Rotate">
-                    <i class="ph-bold ph-arrows-clockwise"></i>
-                </button>
+                <button class="control-btn" id="btn-zoom-in" title="Zoom In">➕</button>
+                <button class="control-btn" id="btn-zoom-out" title="Zoom Out">➖</button>
+                <button class="control-btn" id="btn-reset" title="Reset">🔄</button>
+                <button class="control-btn" id="btn-auto-rotate" title="Auto Rotate">🔁</button>
             </div>
         </main>
 
-        <!-- Right Panel - Details -->
         <aside class="right-panel">
             <div class="panel-title">Node Details</div>
             <div id="detail-panel">
@@ -889,773 +675,328 @@
         </aside>
     </div>
 
-    <!-- Node Tooltip -->
+    <!-- Tooltip -->
     <div class="node-tooltip" id="tooltip">
-        <div class="tooltip-title">
-            <span id="tooltip-icon">💡</span>
-            <span id="tooltip-title">Node Name</span>
-        </div>
-        <div class="tooltip-desc" id="tooltip-desc">Node description goes here...</div>
+        <div class="tooltip-title" id="tooltip-title">Node</div>
+        <div class="tooltip-desc" id="tooltip-desc">Description</div>
     </div>
 
     <script>
-        // ============================================
-        // MEMORY DATA - Complete Knowledge Graph
-        // ============================================
+        // Memory Data
         const memoryData = {
             user: {
                 name: "Willian",
                 alias: "Walbarellos",
                 age: 30,
-                origin: "Brazil",
-                nationality: "Brazilian"
+                origin: "Brazil"
             },
             categories: [
-                { 
-                    id: "identity", 
-                    name: "Identity", 
-                    color: "#00ff87", 
-                    rgb: "0, 255, 135",
-                    icon: "ph-user"
-                },
-                { 
-                    id: "language", 
-                    name: "Languages", 
-                    color: "#00bbf9", 
-                    rgb: "0, 187, 249",
-                    icon: "ph-translate"
-                },
-                { 
-                    id: "interest", 
-                    name: "Interests", 
-                    color: "#c084fc", 
-                    rgb: "192, 132, 252",
-                    icon: "ph-heart"
-                },
-                { 
-                    id: "tech", 
-                    name: "Technologies", 
-                    color: "#fb923c", 
-                    rgb: "251, 146, 60",
-                    icon: "ph-code"
-                },
-                { 
-                    id: "location", 
-                    name: "Locations", 
-                    color: "#f472b6", 
-                    rgb: "244, 114, 182",
-                    icon: "ph-map-pin"
-                }
+                { id: "identity", name: "Identity", color: "#00ff87", rgb: "0, 255, 135", icon: "👤" },
+                { id: "language", name: "Languages", color: "#00bbf9", rgb: "0, 187, 249", icon: "💬" },
+                { id: "interest", name: "Interests", color: "#c084fc", rgb: "192, 132, 252", icon: "❤️" },
+                { id: "tech", name: "Technologies", color: "#fb923c", rgb: "251, 146, 60", icon: "⚙️" }
             ],
             nodes: [
-                // Identity
                 { id: "willian", label: "Willian", group: "identity", icon: "👤", 
-                  desc: "Full name: Willian. Also known as Walbarellos on Linux. 30 years old, Brazilian developer passionate about technology.", 
+                  desc: "Full name: Willian. Known as Walbarellos on Linux. 30 years old, Brazilian developer.", 
                   tags: ["personal", "primary"] },
                 { id: "brazil", label: "🇧🇷 Brazil", group: "identity", icon: "🌎", 
-                  desc: "Country of origin. Largest country in South America, known for its diverse culture and technology scene.", 
+                  desc: "Country of origin. Largest country in South America.", 
                   tags: ["country", "home"] },
-                { id: "age", label: "30 Years Old", group: "identity", icon: "🎂", 
-                  desc: "Born approximately in 1996. In the prime of his career as a software developer.", 
+                { id: "age", label: "30 Years", group: "identity", icon: "🎂", 
+                  desc: "Born approximately in 1996.", 
                   tags: ["age", "demographic"] },
                 
-                // Languages
                 { id: "pt-br", label: "🇧🇷 Portuguese", group: "language", icon: "💬", 
-                  desc: "Native language. Portuguese from Brazil with full fluency in both written and spoken forms.", 
+                  desc: "Native language from Brazil.", 
                   tags: ["native", "fluent"] },
                 { id: "en-us", label: "🇺🇸 English", group: "language", icon: "🇺🇸", 
-                  desc: "Fluent in American English. Can communicate professionally and technically.", 
-                  tags: ["fluent", "professional"] },
+                  desc: "Fluent in American English.", 
+                  tags: ["fluent"] },
                 { id: "hebrew", label: "🇮🇱 Hebrew", group: "language", icon: "✡️", 
-                  desc: "Speaks Hebrew. Interest connected to Israeli culture and Judaism.", 
-                  tags: ["hebrew", "interest"] },
+                  desc: "Speaks Hebrew.", 
+                  tags: ["hebrew"] },
                 { id: "es", label: "🇪🇸 Spanish", group: "language", icon: "🇪🇸", 
-                  desc: "Fluent in Spanish. Can communicate fluently in all contexts.", 
-                  tags: ["fluent", "romance"] },
+                  desc: "Fluent in Spanish.", 
+                  tags: ["fluent"] },
                 
-                // Interests
                 { id: "software-eng", label: "💻 Software Eng.", group: "interest", icon: "⚙️", 
-                  desc: "Passionate about software engineering. Expert-level knowledge in multiple programming paradigms and architectures.", 
+                  desc: "Passionate about software engineering.", 
                   tags: ["passion", "career"] },
                 { id: "anime", label: "🎌 Anime", group: "interest", icon: "📺", 
-                  desc: "Loves anime culture. Follows current series and classic works.", 
-                  tags: ["entertainment", "japanese"] },
+                  desc: "Loves anime culture.", 
+                  tags: ["entertainment"] },
                 { id: "manga", label: "📚 Manga", group: "interest", icon: "📖", 
-                  desc: "Enjoys reading manga. Familiar with various genres and styles.", 
-                  tags: ["entertainment", "japanese"] },
-                { id: "games", label: "🎮 Video Games", group: "interest", icon: "🕹️", 
-                  desc: "Passionate gamer. Enjoys various genres from RPGs to competitive games.", 
-                  tags: ["entertainment", "hobby"] },
-                { id: "crypto", label: "₿ Cryptocurrencies", group: "interest", icon: "📈", 
-                  desc: "Interested in cryptocurrencies and blockchain technology. Follows market trends and DeFi.", 
-                  tags: ["finance", "tech"] },
+                  desc: "Enjoys reading manga.", 
+                  tags: ["entertainment"] },
+                { id: "games", label: "🎮 Games", group: "interest", icon: "🕹️", 
+                  desc: "Passionate gamer.", 
+                  tags: ["hobby"] },
+                { id: "crypto", label: "₿ Crypto", group: "interest", icon: "📈", 
+                  desc: "Interested in cryptocurrencies.", 
+                  tags: ["finance"] },
                 { id: "israel", label: "🇮🇱 Israel", group: "interest", icon: "🕎", 
-                  desc: "Deep interest in Israeli culture, history, and technology scene. The Startup Nation.", 
-                  tags: ["culture", "geopolitics"] },
+                  desc: "Deep interest in Israeli culture.", 
+                  tags: ["culture"] },
                 { id: "judaism", label: "✡️ Judaism", group: "interest", icon: "📿", 
-                  desc: "Practicing or studying Judaism. Connected to Hebrew language learning.", 
-                  tags: ["religion", "culture"] },
+                  desc: "Practicing or studying Judaism.", 
+                  tags: ["religion"] },
                 
-                // Technologies
                 { id: "arch", label: "🟢 Arch Linux", group: "tech", icon: "🐧", 
-                  desc: "Uses Arch Linux as primary operating system. Prefers rolling release and minimal setup.", 
-                  tags: ["os", "daily-driver"] },
+                  desc: "Uses Arch Linux as primary OS.", 
+                  tags: ["os"] },
                 { id: "opencode", label: "⚡ OpenCode", group: "tech", icon: "⚡", 
-                  desc: "Uses OpenCode AI coding assistant. Configured with personalized memory system.", 
-                  tags: ["ai", "assistant"] },
+                  desc: "Uses OpenCode AI assistant.", 
+                  tags: ["ai"] },
                 { id: "mempalace", label: "🏛️ MemPalace", group: "tech", icon: "🏛️", 
-                  desc: "Uses MemPalace for AI memory management. Organizes memories into categories and wings.", 
-                  tags: ["memory", "ai"] },
-                { id: "hermes", label: "🤖 Hermes Agent", group: "tech", icon: "🤖", 
-                  desc: "Uses Hermes as an AI agent for complex tasks and automation.", 
-                  tags: ["ai", "agent"] },
+                  desc: "Uses MemPalace for memory.", 
+                  tags: ["memory"] },
+                { id: "hermes", label: "🤖 Hermes", group: "tech", icon: "🤖", 
+                  desc: "Uses Hermes AI agent.", 
+                  tags: ["ai"] },
                 { id: "vigilia", label: "🔮 Vigilia", group: "tech", icon: "🔮", 
-                  desc: "Development environment setup containing tools like MemPalace and custom scripts.", 
-                  tags: ["dev-env", "tools"] },
-                { id: "cli", label: "⌨️ CLI Expert", group: "tech", icon: "💻", 
-                  desc: "Expert in command-line interfaces. Prefers terminal over GUI for most tasks.", 
-                  tags: ["skills", "productivity"] },
+                  desc: "Development environment.", 
+                  tags: ["dev-env"] },
+                { id: "cli", label: "⌨️ CLI", group: "tech", icon: "💻", 
+                  desc: "Expert in command-line.", 
+                  tags: ["skills"] },
                 { id: "python", label: "🐍 Python", group: "tech", icon: "🐍", 
-                  desc: "Primary programming language. Used for scripting, automation, and AI tools.", 
-                  tags: ["language", "primary"] },
-                { id: "javascript", label: "🌟 JavaScript", group: "tech", icon: "⚡", 
-                  desc: "Knows JavaScript for web development and Node.js applications.", 
-                  tags: ["language", "web"] }
+                  desc: "Primary programming language.", 
+                  tags: ["language"] }
             ],
             links: [
-                // Identity links
-                { source: "willian", target: "brazil", strength: 1 },
-                { source: "willian", target: "age", strength: 1 },
-                { source: "willian", target: "pt-br", strength: 1 },
-                { source: "willian", target: "en-us", strength: 1 },
-                { source: "willian", target: "hebrew", strength: 1 },
-                { source: "willian", target: "es", strength: 1 },
-                { source: "willian", target: "software-eng", strength: 1 },
-                { source: "willian", target: "arch", strength: 1 },
-                { source: "willian", target: "cli", strength: 0.8 },
-                
-                // Language connections
-                { source: "pt-br", target: "brazil", strength: 1 },
-                { source: "hebrew", target: "israel", strength: 1 },
-                { source: "hebrew", target: "judaism", strength: 1 },
-                { source: "es", target: "brazil", strength: 0.5 },
-                
-                // Interest links
-                { source: "software-eng", target: "python", strength: 1 },
-                { source: "software-eng", target: "javascript", strength: 0.8 },
-                { source: "software-eng", target: "cli", strength: 1 },
-                { source: "software-eng", target: "opencode", strength: 1 },
-                { source: "software-eng", target: "mempalace", strength: 0.8 },
-                { source: "anime", target: "manga", strength: 1 },
-                { source: "anime", target: "japan-culture", strength: 0.8 },
-                { source: "games", target: "software-eng", strength: 0.6 },
-                { source: "crypto", target: "software-eng", strength: 0.6 },
-                { source: "crypto", target: "blockchain", strength: 1 },
-                { source: "israel", target: "judaism", strength: 1 },
-                { source: "israel", target: "hebrew", strength: 1 },
-                { source: "judaism", target: "hebrew", strength: 1 },
-                
-                // Tech connections
-                { source: "arch", target: "cli", strength: 1 },
-                { source: "arch", target: "opencode", strength: 0.8 },
-                { source: "arch", target: "python", strength: 0.8 },
-                { source: "opencode", target: "mempalace", strength: 1 },
-                { source: "opencode", target: "hermes", strength: 1 },
-                { source: "opencode", target: "ai", strength: 1 },
-                { source: "mempalace", target: "vigilia", strength: 1 },
-                { source: "mempalace", target: "python", strength: 1 },
-                { source: "hermes", target: "vigilia", strength: 1 },
-                { source: "hermes", target: "ai", strength: 1 },
-                { source: "vigilia", target: "python", strength: 0.8 },
-                { source: "python", target: "ai", strength: 1 },
-                { source: "javascript", target: "web", strength: 1 }
+                { source: "willian", target: "brazil" },
+                { source: "willian", target: "age" },
+                { source: "willian", target: "pt-br" },
+                { source: "willian", target: "en-us" },
+                { source: "willian", target: "hebrew" },
+                { source: "willian", target: "es" },
+                { source: "willian", target: "software-eng" },
+                { source: "willian", target: "arch" },
+                { source: "pt-br", target: "brazil" },
+                { source: "hebrew", target: "israel" },
+                { source: "hebrew", target: "judaism" },
+                { source: "software-eng", target: "python" },
+                { source: "software-eng", target: "cli" },
+                { source: "software-eng", target: "opencode" },
+                { source: "anime", target: "manga" },
+                { source: "games", target: "software-eng" },
+                { source: "crypto", target: "software-eng" },
+                { source: "israel", target: "judaism" },
+                { source: "arch", target: "cli" },
+                { source: "opencode", target: "mempalace" },
+                { source: "opencode", target: "hermes" },
+                { source: "mempalace", target: "vigilia" },
+                { source: "hermes", target: "vigilia" },
+                { source: "python", target: "mempalace" }
             ]
         };
 
-        // ============================================
-        // THREE.JS 3D VISUALIZATION
-        // ============================================
-        class MemoryNetwork3D {
-            constructor(canvas) {
-                this.canvas = canvas;
-                this.scene = new THREE.Scene();
-                this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-                this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-                this.renderer.setSize(window.innerWidth, window.innerHeight - 80);
-                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-                
-                this.nodes = [];
-                this.links = [];
-                this.selectedNode = null;
-                this.raycaster = new THREE.Raycaster();
-                this.mouse = new THREE.Vector2();
-                this.autoRotate = false;
-                
-                this.init();
-            }
+        // Three.js 3D
+        let scene, camera, renderer, nodes = [], links = [];
+        let selectedNode = null;
+        let autoRotate = false;
+
+        function init3D() {
+            const canvas = document.getElementById('network-canvas-3d');
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             
-            init() {
-                // Camera position
-                this.camera.position.z = 30;
-                this.camera.position.x = 10;
-                this.camera.position.y = 10;
-                
-                // Lights
-                const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
-                this.scene.add(ambientLight);
-                
-                const pointLight = new THREE.PointLight(0x00f5d4, 1, 100);
-                pointLight.position.set(10, 10, 10);
-                this.scene.add(pointLight);
-                
-                const pointLight2 = new THREE.PointLight(0x9b5de5, 0.5, 100);
-                pointLight2.position.set(-10, -10, -10);
-                this.scene.add(pointLight2);
-                
-                // Create nodes and links
-                this.createNetwork();
-                
-                // Controls
-                this.setupControls();
-                
-                // Events
-                window.addEventListener('resize', () => this.onResize());
-                this.canvas.addEventListener('mousemove', (e) => this.onMouseMove(e));
-                this.canvas.addEventListener('click', (e) => this.onClick(e));
-                
-                // Start animation
-                this.animate();
-            }
+            camera.position.z = 30;
             
-            createNetwork() {
-                const categoryColors = {};
-                memoryData.categories.forEach(cat => {
-                    categoryColors[cat.id] = cat.color;
-                });
-                
-                // Create node meshes
-                memoryData.nodes.forEach((node, i) => {
-                    const color = categoryColors[node.group] || '#ffffff';
-                    
-                    // Node sphere
-                    const geometry = new THREE.SphereGeometry(0.8, 32, 32);
-                    const material = new THREE.MeshPhongMaterial({
-                        color: color,
-                        emissive: color,
-                        emissiveIntensity: 0.3,
-                        shininess: 100
-                    });
-                    
-                    const mesh = new THREE.Mesh(geometry, material);
-                    mesh.position.set(
-                        (Math.random() - 0.5) * 20,
-                        (Math.random() - 0.5) * 20,
-                        (Math.random() - 0.5) * 20
-                    );
-                    
-                    // Glow effect
-                    const glowGeometry = new THREE.SphereGeometry(1, 32, 32);
-                    const glowMaterial = new THREE.MeshBasicMaterial({
-                        color: color,
-                        transparent: true,
-                        opacity: 0.2
-                    });
-                    const glow = new THREE.Mesh(glowGeometry, glowMaterial);
-                    mesh.add(glow);
-                    
-                    // Label
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    canvas.width = 256;
-                    canvas.height = 64;
-                    ctx.fillStyle = 'white';
-                    ctx.font = 'bold 24px Orbitron';
-                    ctx.textAlign = 'center';
-                    ctx.fillText(node.label, 128, 40);
-                    
-                    const texture = new THREE.CanvasTexture(canvas);
-                    const spriteMaterial = new THREE.SpriteMaterial({ map: texture, transparent: true });
-                    const sprite = new THREE.Sprite(spriteMaterial);
-                    sprite.scale.set(4, 1, 1);
-                    sprite.position.y = 1.5;
-                    mesh.add(sprite);
-                    
-                    mesh.userData = node;
-                    this.scene.add(mesh);
-                    this.nodes.push(mesh);
-                });
-                
-                // Create link lines
-                memoryData.links.forEach(link => {
-                    const sourceNode = this.nodes.find(n => n.userData.id === link.source);
-                    const targetNode = this.nodes.find(n => n.userData.id === link.target);
-                    
-                    if (sourceNode && targetNode) {
-                        const material = new THREE.LineBasicMaterial({
-                            color: 0x00f5d4,
-                            transparent: true,
-                            opacity: link.strength * 0.3
-                        });
-                        
-                        const geometry = new THREE.BufferGeometry().setFromPoints([
-                            sourceNode.position,
-                            targetNode.position
-                        ]);
-                        
-                        const line = new THREE.Line(geometry, material);
-                        line.userData = { source: sourceNode, target: targetNode, strength: link.strength };
-                        this.scene.add(line);
-                        this.links.push(line);
-                    }
-                });
-            }
+            // Lights
+            scene.add(new THREE.AmbientLight(0x404040, 0.5));
+            const p1 = new THREE.PointLight(0x00f5d4, 1, 100);
+            p1.position.set(10, 10, 10);
+            scene.add(p1);
             
-            setupControls() {
-                let isDragging = false;
-                let previousMousePosition = { x: 0, y: 0 };
-                let rotationSpeed = 0.005;
-                
-                this.canvas.addEventListener('mousedown', (e) => {
-                    isDragging = true;
-                    previousMousePosition = { x: e.clientX, y: e.clientY };
-                });
-                
-                this.canvas.addEventListener('mousemove', (e) => {
-                    if (isDragging) {
-                        const deltaMove = {
-                            x: e.clientX - previousMousePosition.x,
-                            y: e.clientY - previousMousePosition.y
-                        };
-                        
-                        this.scene.rotation.y += deltaMove.x * rotationSpeed;
-                        this.scene.rotation.x += deltaMove.y * rotationSpeed;
-                        
-                        previousMousePosition = { x: e.clientX, y: e.clientY };
-                    }
-                });
-                
-                this.canvas.addEventListener('mouseup', () => {
-                    isDragging = false;
-                });
-                
-                this.canvas.addEventListener('wheel', (e) => {
-                    e.preventDefault();
-                    const zoomSpeed = 0.001;
-                    this.camera.position.z += e.deltaY * zoomSpeed * this.camera.position.z;
-                    this.camera.position.z = Math.max(10, Math.min(50, this.camera.position.z));
-                });
-                
-                // Control buttons
-                document.getElementById('btn-zoom-in').addEventListener('click', () => {
-                    gsap.to(this.camera.position, { z: this.camera.position.z - 5, duration: 0.5 });
-                });
-                
-                document.getElementById('btn-zoom-out').addEventListener('click', () => {
-                    gsap.to(this.camera.position, { z: this.camera.position.z + 5, duration: 0.5 });
-                });
-                
-                document.getElementById('btn-reset').addEventListener('click', () => {
-                    gsap.to(this.scene.rotation, { x: 0, y: 0, z: 0, duration: 1 });
-                    gsap.to(this.camera.position, { x: 0, y: 10, z: 30, duration: 1 });
-                });
-                
-                document.getElementById('btn-auto-rotate').addEventListener('click', (e) => {
-                    this.autoRotate = !this.autoRotate;
-                    e.currentTarget.classList.toggle('active');
-                });
-            }
+            // Create nodes
+            const colors = {};
+            memoryData.categories.forEach(c => colors[c.id] = c.color);
             
-            onMouseMove(event) {
-                const rect = this.canvas.getBoundingClientRect();
-                this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-                this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-                
-                this.raycaster.setFromCamera(this.mouse, this.camera);
-                const intersects = this.raycaster.intersectObjects(this.nodes);
-                
-                if (intersects.length > 0) {
-                    this.canvas.style.cursor = 'pointer';
-                    const node = intersects[0].object;
-                    this.showTooltip(node.userData, event.clientX, event.clientY);
-                    
-                    // Highlight node
-                    this.nodes.forEach(n => {
-                        if (n === node) {
-                            n.scale.set(1.3, 1.3, 1.3);
-                        } else {
-                            n.scale.set(1, 1, 1);
-                        }
-                    });
-                } else {
-                    this.canvas.style.cursor = 'grab';
-                    this.hideTooltip();
-                    this.nodes.forEach(n => n.scale.set(1, 1, 1));
+            memoryData.nodes.forEach((node, i) => {
+                const color = colors[node.group];
+                const geo = new THREE.SphereGeometry(0.7, 32, 32);
+                const mat = new THREE.MeshPhongMaterial({ 
+                    color, 
+                    emissive: color, 
+                    emissiveIntensity: 0.3 
+                });
+                const mesh = new THREE.Mesh(geo, mat);
+                mesh.position.set(
+                    (Math.random() - 0.5) * 18,
+                    (Math.random() - 0.5) * 18,
+                    (Math.random() - 0.5) * 18
+                );
+                mesh.userData = node;
+                scene.add(mesh);
+                nodes.push(mesh);
+            });
+            
+            // Create links
+            memoryData.links.forEach(link => {
+                const s = nodes.find(n => n.userData.id === link.source);
+                const t = nodes.find(n => n.userData.id === link.target);
+                if (s && t) {
+                    const geo = new THREE.BufferGeometry().setFromPoints([s.position, t.position]);
+                    const mat = new THREE.LineBasicMaterial({ color: 0x00f5d4, transparent: true, opacity: 0.3 });
+                    const line = new THREE.Line(geo, mat);
+                    scene.add(line);
+                    links.push({ line, source: s, target: t });
                 }
-            }
+            });
             
-            onClick(event) {
-                const rect = this.canvas.getBoundingClientRect();
-                this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-                this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-                
-                this.raycaster.setFromCamera(this.mouse, this.camera);
-                const intersects = this.raycaster.intersectObjects(this.nodes);
-                
-                if (intersects.length > 0) {
-                    this.selectNode(intersects[0].object.userData);
+            // Drag
+            let isDragging = false, prev = { x: 0, y: 0 };
+            canvas.addEventListener('mousedown', e => { isDragging = true; prev = { x: e.clientX, y: e.clientY }; });
+            canvas.addEventListener('mousemove', e => {
+                if (isDragging) {
+                    scene.rotation.y += (e.clientX - prev.x) * 0.005;
+                    scene.rotation.x += (e.clientY - prev.y) * 0.005;
+                    prev = { x: e.clientX, y: prev.y };
                 }
-            }
+            });
+            canvas.addEventListener('mouseup', () => isDragging = false);
+            canvas.addEventListener('wheel', e => {
+                camera.position.z = Math.max(10, Math.min(50, camera.position.z + e.deltaY * 0.01 * camera.position.z));
+            });
             
-            selectNode(nodeData) {
-                this.selectedNode = nodeData;
-                updateDetailPanel(nodeData);
-                
-                // Highlight connected nodes
-                const connectedIds = memoryData.links
-                    .filter(l => l.source === nodeData.id || l.target === nodeData.id)
-                    .flatMap(l => [l.source, l.target]);
-                
-                gsap.to(this.nodes, {
-                    duration: 0.5,
-                    onUpdate: () => {
-                        this.nodes.forEach(n => {
-                            const isConnected = connectedIds.includes(n.userData.id) || n.userData.id === nodeData.id;
-                            n.material.emissiveIntensity = isConnected ? 0.8 : 0.1;
-                            n.scale.set(isConnected ? 1.2 : 0.8, isConnected ? 1.2 : 0.8, isConnected ? 1.2 : 0.8);
-                        });
-                    }
-                });
-            }
-            
-            showTooltip(data, x, y) {
-                const tooltip = document.getElementById('tooltip');
-                document.getElementById('tooltip-icon').textContent = data.icon || '💡';
-                document.getElementById('tooltip-title').textContent = data.label;
-                document.getElementById('tooltip-desc').textContent = data.desc;
-                
-                tooltip.style.left = (x + 20) + 'px';
-                tooltip.style.top = (y - 20) + 'px';
-                tooltip.classList.add('visible');
-            }
-            
-            hideTooltip() {
-                document.getElementById('tooltip').classList.remove('visible');
-            }
-            
-            onResize() {
-                this.camera.aspect = window.innerWidth / window.innerHeight;
-                this.camera.updateProjectionMatrix();
-                this.renderer.setSize(window.innerWidth, window.innerHeight - 80);
-            }
-            
-            animate() {
-                requestAnimationFrame(() => this.animate());
-                
-                if (this.autoRotate) {
-                    this.scene.rotation.y += 0.002;
-                }
-                
-                // Animate nodes
-                this.nodes.forEach((node, i) => {
-                    node.position.y += Math.sin(Date.now() * 0.001 + i) * 0.01;
-                });
-                
-                this.renderer.render(this.scene, this.camera);
-            }
+            animate3D();
         }
 
-        // ============================================
-        // D3.JS 2D VISUALIZATION
-        // ============================================
-        class MemoryNetwork2D {
-            constructor(svgElement) {
-                this.svg = d3.select(svgElement);
-                this.width = window.innerWidth - 640;
-                this.height = window.innerHeight - 80;
-                this.simulation = null;
-                
-                this.init();
-            }
-            
-            init() {
-                this.svg.attr('width', this.width).attr('height', this.height);
-                
-                const g = this.svg.append('g');
-                
-                // Zoom
-                const zoom = d3.zoom()
-                    .scaleExtent([0.1, 4])
-                    .on('zoom', (event) => g.attr('transform', event.transform));
-                
-                this.svg.call(zoom);
-                
-                // Create simulation
-                this.simulation = d3.forceSimulation(memoryData.nodes)
-                    .force('link', d3.forceLink(memoryData.links).id(d => d.id).distance(120))
-                    .force('charge', d3.forceManyBody().strength(-400))
-                    .force('center', d3.forceCenter(this.width / 2, this.height / 2))
-                    .force('collision', d3.forceCollide().radius(50));
-                
-                // Draw links
-                const links = g.append('g')
-                    .selectAll('line')
-                    .data(memoryData.links)
-                    .join('line')
-                    .attr('stroke', 'rgba(0, 245, 212, 0.3)')
-                    .attr('stroke-width', d => d.strength * 2);
-                
-                // Draw nodes
-                const categoryColors = {};
-                memoryData.categories.forEach(cat => {
-                    categoryColors[cat.id] = cat.color;
-                });
-                
-                const nodes = g.append('g')
-                    .selectAll('g')
-                    .data(memoryData.nodes)
-                    .join('g')
-                    .call(d3.drag()
-                        .on('start', (event, d) => this.dragStarted(event, d))
-                        .on('drag', (event, d) => this.dragged(event, d))
-                        .on('end', (event, d) => this.dragEnded(event, d)));
-                
-                nodes.append('circle')
-                    .attr('r', 20)
-                    .attr('fill', d => categoryColors[d.group])
-                    .attr('stroke', '#fff')
-                    .attr('stroke-width', 2)
-                    .style('filter', 'drop-shadow(0 0 10px rgba(0, 245, 212, 0.5))');
-                
-                nodes.append('text')
-                    .text(d => d.icon)
-                    .attr('text-anchor', 'middle')
-                    .attr('dy', '0.35em')
-                    .attr('font-size', '16px');
-                
-                nodes.append('text')
-                    .text(d => d.label)
-                    .attr('text-anchor', 'middle')
-                    .attr('dy', '40px')
-                    .attr('fill', '#fff')
-                    .attr('font-size', '11px')
-                    .attr('font-family', 'Orbitron, monospace');
-                
-                // Click handler
-                nodes.on('click', (event, d) => {
-                    selectNode2D(d);
-                });
-                
-                // Hover
-                nodes.on('mouseover', function(event, d) {
-                    d3.select(this).select('circle')
-                        .transition().duration(200)
-                        .attr('r', 25)
-                        .style('filter', 'drop-shadow(0 0 20px rgba(0, 245, 212, 0.8))');
-                })
-                .on('mouseout', function() {
-                    d3.select(this).select('circle')
-                        .transition().duration(200)
-                        .attr('r', 20)
-                        .style('filter', 'drop-shadow(0 0 10px rgba(0, 245, 212, 0.5))');
-                });
-                
-                this.simulation.on('tick', () => {
-                    links
-                        .attr('x1', d => d.source.x)
-                        .attr('y1', d => d.source.y)
-                        .attr('x2', d => d.target.x)
-                        .attr('y2', d => d.target.y);
-                    
-                    nodes.attr('transform', d => `translate(${d.x},${d.y})`);
-                });
-                
-                function selectNode2D(d) {
-                    updateDetailPanel(d);
-                }
-            }
-            
-            dragStarted(event, d) {
-                if (!event.active) this.simulation.alphaTarget(0.3).restart();
-                d.fx = d.x;
-                d.fy = d.y;
-            }
-            
-            dragged(event, d) {
-                d.fx = event.x;
-                d.fy = event.y;
-            }
-            
-            dragEnded(event, d) {
-                if (!event.active) this.simulation.alphaTarget(0);
-                d.fx = null;
-                d.fy = null;
-            }
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+            if (autoRotate) scene.rotation.y += 0.002;
+            nodes.forEach((n, i) => n.position.y += Math.sin(Date.now() * 0.001 + i) * 0.008);
+            renderer.render(scene, camera);
         }
 
-        // ============================================
-        // UI FUNCTIONS
-        // ============================================
+        // D3.js 2D
+        function init2D() {
+            const svg = d3.select('#network-canvas-2d');
+            const w = window.innerWidth - 600;
+            const h = window.innerHeight - 70;
+            
+            svg.attr('width', w).attr('height', h);
+            const g = svg.append('g');
+            
+            svg.call(d3.zoom().scaleExtent([0.1, 4]).on('zoom', e => g.attr('transform', e.transform)));
+            
+            const sim = d3.forceSimulation(memoryData.nodes)
+                .force('link', d3.forceLink(memoryData.links).id(d => d.id).distance(120))
+                .force('charge', d3.forceManyBody().strength(-350))
+                .force('center', d3.forceCenter(w / 2, h / 2))
+                .force('collision', d3.forceCollide().radius(45));
+            
+            const colors = {};
+            memoryData.categories.forEach(c => colors[c.id] = c.color);
+            
+            const linksG = g.append('g').selectAll('line').data(memoryData.links).join('line')
+                .attr('stroke', 'rgba(0,245,212,0.3)').attr('stroke-width', 2);
+            
+            const nodesG = g.append('g').selectAll('g').data(memoryData.nodes).join('g')
+                .call(d3.drag().on('start', (e, d) => { if (!e.active) sim.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
+                    .on('drag', (e, d) => { d.fx = e.x; d.fy = e.y; })
+                    .on('end', (e, d) => { if (!e.active) sim.alphaTarget(0); d.fx = null; d.fy = null; }));
+            
+            nodesG.append('circle').attr('r', 18).attr('fill', d => colors[d.group])
+                .attr('stroke', '#fff').attr('stroke-width', 2);
+            nodesG.append('text').text(d => d.icon).attr('text-anchor', 'middle').attr('dy', '0.35em').attr('font-size', '14px');
+            nodesG.append('text').text(d => d.label).attr('text-anchor', 'middle').attr('dy', '35px')
+                .attr('fill', '#fff').attr('font-size', '10px').attr('font-family', 'Orbitron, sans-serif');
+            
+            nodesG.on('click', (e, d) => updateDetailPanel(d));
+            
+            sim.on('tick', () => {
+                linksG.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+                    .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+                nodesG.attr('transform', d => `translate(${d.x},${d.y})`);
+            });
+        }
+
+        // UI
         function updateDetailPanel(node) {
-            const panel = document.getElementById('detail-panel');
-            const category = memoryData.categories.find(c => c.id === node.group);
-            const connections = memoryData.links
-                .filter(l => l.source === node.id || l.target === node.id)
+            const cat = memoryData.categories.find(c => c.id === node.group);
+            const conns = memoryData.links.filter(l => l.source === node.id || l.target === node.id)
                 .map(l => l.source === node.id ? l.target : l.source);
             
-            panel.innerHTML = `
+            document.getElementById('detail-panel').innerHTML = `
                 <div class="detail-card">
                     <div class="detail-header">
-                        <div class="detail-node-icon" style="background: linear-gradient(135deg, ${category?.color}, ${category?.color}88)">
-                            ${node.icon}
-                        </div>
+                        <div class="detail-node-icon">${node.icon}</div>
                         <div>
                             <div class="detail-title">${node.label}</div>
-                            <div class="detail-subtitle">${category?.name || 'Uncategorized'}</div>
+                            <div class="detail-subtitle">${cat?.name || ''}</div>
                         </div>
                     </div>
                     <p class="detail-description">${node.desc}</p>
-                    
                     <div class="detail-section-title">Connections</div>
                     <div class="connections-list">
-                        ${connections.map(id => {
-                            const connNode = memoryData.nodes.find(n => n.id === id);
-                            return connNode ? `<span class="connection-tag">${connNode.icon} ${connNode.label}</span>` : '';
+                        ${conns.map(id => {
+                            const n = memoryData.nodes.find(x => x.id === id);
+                            return n ? `<span class="connection-tag">${n.icon} ${n.label}</span>` : '';
                         }).join('')}
                     </div>
-                    
                     <div class="detail-section-title">Tags</div>
                     <div class="tags-list">
-                        ${node.tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                        ${node.tags.map(t => `<span class="tag">#${t}</span>`).join('')}
                     </div>
                 </div>
             `;
-            
-            gsap.from('.detail-card', { opacity: 0, y: 20, duration: 0.5 });
         }
 
         function populateCategories() {
-            const list = document.getElementById('category-list');
-            const categoryCounts = {};
+            const counts = {};
+            memoryData.nodes.forEach(n => counts[n.group] = (counts[n.group] || 0) + 1);
+            const max = Math.max(...Object.values(counts));
             
-            memoryData.nodes.forEach(node => {
-                categoryCounts[node.group] = (categoryCounts[node.group] || 0) + 1;
-            });
-            
-            const maxCount = Math.max(...Object.values(categoryCounts));
-            
-            list.innerHTML = memoryData.categories.map(cat => {
-                const count = categoryCounts[cat.id] || 0;
-                const percentage = (count / maxCount) * 100;
-                
-                return `
-                    <div class="category-item" data-category="${cat.id}" 
-                         style="--category-color: ${cat.color}; --category-rgb: ${cat.rgb}">
-                        <div class="category-header">
-                            <div class="category-icon">
-                                <i class="ph-fill ${cat.icon}"></i>
-                            </div>
-                            <div>
-                                <div class="category-name">${cat.name}</div>
-                                <div class="category-count">${count} nodes</div>
-                            </div>
-                        </div>
-                        <div class="category-bar">
-                            <div class="category-progress" style="width: ${percentage}%; background: ${cat.color}"></div>
+            document.getElementById('category-list').innerHTML = memoryData.categories.map(cat => `
+                <div class="category-item" data-category="${cat.id}" style="--category-color: ${cat.color}; --category-rgb: ${cat.rgb}">
+                    <div class="category-header">
+                        <div class="category-icon">${cat.icon}</div>
+                        <div>
+                            <div class="category-name">${cat.name}</div>
+                            <div class="category-count">${counts[cat.id] || 0} nodes</div>
                         </div>
                     </div>
-                `;
-            }).join('');
+                </div>
+            `).join('');
             
-            // Update stats
             document.getElementById('node-count').textContent = memoryData.nodes.length;
             document.getElementById('link-count').textContent = memoryData.links.length;
-            document.getElementById('category-count').textContent = memoryData.categories.length;
         }
 
-        function setupSearch() {
-            const searchInput = document.getElementById('search');
-            
-            searchInput.addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase();
-                
-                if (network3D) {
-                    network3D.nodes.forEach(node => {
-                        const matches = node.userData.label.toLowerCase().includes(query) || 
-                                       node.userData.desc.toLowerCase().includes(query);
-                        node.visible = !query || matches;
-                        node.material.opacity = !query || matches ? 1 : 0.2;
-                    });
-                }
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            particlesJS('particles-js', {
+                particles: { number: { value: 60 }, color: { value: '#00f5d4' }, line_linked: { enable: true, distance: 150, color: '#00f5d4', opacity: 0.2 } }
             });
-        }
-
-        function setupModeToggle() {
-            const buttons = document.querySelectorAll('.toggle-btn');
             
-            buttons.forEach(btn => {
+            init3D();
+            init2D();
+            populateCategories();
+            
+            // Controls
+            document.getElementById('btn-auto-rotate').addEventListener('click', e => {
+                autoRotate = !autoRotate;
+                e.currentTarget.style.background = autoRotate ? 'var(--primary)' : '';
+            });
+            
+            // Mode toggle
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    buttons.forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    
                     const mode = btn.dataset.mode;
-                    const container = document.querySelector('.app-container');
-                    
-                    if (mode === '3d') {
-                        container.classList.add('view-mode-3d');
-                        container.classList.remove('view-mode-2d');
-                    } else {
-                        container.classList.remove('view-mode-3d');
-                        container.classList.add('view-mode-2d');
-                    }
+                    document.getElementById('network-canvas-3d').style.display = mode === '3d' ? 'block' : 'none';
+                    document.getElementById('network-canvas-2d').style.display = mode === '2d' ? 'block' : 'none';
                 });
             });
-        }
-
-        // ============================================
-        // INITIALIZATION
-        // ============================================
-        let network3D, network2D;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // Init particles
-            particlesJS('particles-js', {
-                particles: {
-                    number: { value: 80, density: { enable: true, value_area: 800 } },
-                    color: { value: '#00f5d4' },
-                    shape: { type: 'circle' },
-                    opacity: { value: 0.5, random: true },
-                    size: { value: 3, random: true },
-                    line_linked: {
-                        enable: true,
-                        distance: 150,
-                        color: '#00f5d4',
-                        opacity: 0.2,
-                        width: 1
-                    }
-                }
-            });
             
-            // Init 3D network
-            network3D = new MemoryNetwork3D(document.getElementById('network-canvas-3d'));
-            
-            // Init 2D network
-            network2D = new MemoryNetwork2D(document.getElementById('network-canvas-2d'));
-            
-            // Setup UI
-            populateCategories();
-            setupSearch();
-            setupModeToggle();
-            
-            // GSAP animations
-            gsap.from('.header', { y: -100, opacity: 0, duration: 1, ease: 'power3.out' });
-            gsap.from('.left-panel', { x: -100, opacity: 0, duration: 1, delay: 0.2, ease: 'power3.out' });
-            gsap.from('.right-panel', { x: 100, opacity: 0, duration: 1, delay: 0.2, ease: 'power3.out' });
-            gsap.from('.canvas-controls', { y: 50, opacity: 0, duration: 1, delay: 0.5, ease: 'power3.out' });
-            
-            // Hide loading screen
-            setTimeout(() => {
-                document.getElementById('loading').classList.add('hidden');
-            }, 2000);
+            setTimeout(() => document.getElementById('loading').classList.add('hidden'), 1500);
         });
     </script>
 </body>
