@@ -1,155 +1,18 @@
 {
   "profile": {
-    "name": "Willian",
-    "alias": "Walbarellos",
-    "age": 30,
-    "origin": "Brazil",
-    "languages": ["Português (BR)", "English (US)", "עברית (Hebrew)", "Español"]
+    "name": "Your Name",
+    "alias": "your-alias"
   },
   "themes": [
     {
-      "id": "identity",
-      "name": "Identidade",
-      "icon": "👤",
-      "color": "#00ff87",
-      "description": "Perfil pessoal e profissional",
+      "id": "example",
+      "name": "Example Theme",
+      "icon": "💡",
+      "color": "#6366f1",
+      "description": "Configure your own memories!",
       "memories": [
-        { "title": "Nome", "content": "Willian", "meta": "Nome completo" },
-        { "title": "Apelido", "content": "Walbarellos", "meta": "Username Linux" },
-        { "title": "Idade", "content": "30 anos", "meta": "Nascido em 1996" },
-        { "title": "Origem", "content": "🇧🇷 Brasil", "meta": "País de origem" }
-      ]
-    },
-    {
-      "id": "languages",
-      "name": "Idiomas",
-      "icon": "💬",
-      "color": "#00bbf9",
-      "description": "Idiomas falados",
-      "memories": [
-        { "title": "Nativo", "content": "🇧🇷 Português (BR)", "meta": "Língua nativa" },
-        { "title": "Fluente", "content": "🇺🇸 English (US)", "meta": "Profissional" },
-        { "title": "Fluente", "content": "🇪🇸 Español", "meta": "Conversação" },
-        { "title": "Interesse", "content": "✡️ עברית (Hebrew)", "meta": "Cultura judaica" }
-      ]
-    },
-    {
-      "id": "interests",
-      "name": "Interesses",
-      "icon": "❤️",
-      "color": "#c084fc",
-      "description": "Áreas de interesse pessoal",
-      "memories": [
-        { "title": "Carreira", "content": "💻 Engenharia de Software", "meta": "Paixão e profissão" },
-        { "title": "Cultura", "content": "🎌 Anime & Mangá", "meta": "Entretenimento" },
-        { "title": "Hobby", "content": "🎮 Video Games", "meta": "Gamer" },
-        { "title": "Finanças", "content": "₿ Criptomoedas", "meta": "Blockchain" },
-        { "title": "Cultura", "content": "🇮🇱 Israel", "meta": "Startup Nation" },
-        { "title": "Religião", "content": "✡️ Judaísmo", "meta": "Tradição" }
-      ]
-    },
-    {
-      "id": "tech",
-      "name": "Tecnologias",
-      "icon": "⚙️",
-      "color": "#fb923c",
-      "description": "Stack tecnológico",
-      "memories": [
-        { "title": "Sistema", "content": "🐧 Arch Linux", "meta": "OS principal" },
-        { "title": "Linguagem", "content": "🐍 Python", "meta": "Scripting & AI" },
-        { "title": "Linguagem", "content": "📱 Kotlin", "meta": "Android" },
-        { "title": "Framework", "content": "🟣 Next.js", "meta": "Frontend Web" },
-        { "title": "Backend", "content": "🔷 Supabase", "meta": "BaaS - PostgreSQL, Auth, Edge Functions" },
-        { "title": "Database", "content": "🐘 PostgreSQL 16+", "meta": "Banco principal" },
-        { "title": "Cloud", "content": "🔥 Firebase", "meta": "FCM, Analytics" },
-        { "title": "IA", "content": "⚡ OpenCode", "meta": "Coding Assistant" },
-        { "title": "Memória", "content": "🏛️ MemPalace", "meta": "AI Memory" },
-        { "title": "Agente", "content": "🤖 Hermes", "meta": "AI Agent" },
-        { "title": "DevEnv", "content": "🔮 Vigilia", "meta": "Ambiente de desenvolvimento" }
-      ]
-    },
-    {
-      "id": "projects",
-      "name": "Projetos",
-      "icon": "🚀",
-      "color": "#f472b6",
-      "description": "Projetos em desenvolvimento",
-      "memories": [
-        {
-          "title": "Vigília",
-          "content": "Marketplace digital brasileiro que conecta famílias com acompanhantes verificados para pacientes hospitalizados.",
-          "meta": "Projeto principal - Ativo",
-          "details": {
-            "stack": "Next.js + Supabase + Kotlin/Android + Firebase",
-            "location": "Rio Branco, Acre - Brasil",
-            "phase": "Desenvolvimento"
-          }
-        },
-        {
-          "title": "Supabase Integration",
-          "content": "PostgreSQL 16+, Auth, Realtime, Edge Functions (Deno), RLS Policies, Database Migrations",
-          "meta": "Backend as a Service",
-          "details": {
-            "features": "Auth, Realtime, Edge Functions, Storage",
-            "secrets": "Vault para chaves críticas"
-          }
-        },
-        {
-          "title": "Firebase Cloud Messaging",
-          "content": "Push notifications com Phoenix Channels (Supabase Realtime) para foreground e FCM para background",
-          "meta": "Sistema de Mensageria",
-          "details": {
-            "channels": "Match alerts, Chat messages, Operations",
-            "priority": "High/Normal/Low"
-          }
-        }
-      ]
-    },
-    {
-      "id": "documents",
-      "name": "Documentos",
-      "icon": "📄",
-      "color": "#a78bfa",
-      "description": "Documentação técnica",
-      "memories": [
-        {
-          "title": "001 - Visão Geral do Projeto",
-          "content": "Documento de identidade e visão soberana do produto Vigília",
-          "meta": "Vigília / Waterfall / Obrigatórios"
-        },
-        {
-          "title": "002 - Protocolo de Atuação",
-          "content": "Define atos permitidos: Cuidado de Conforto (Zona Verde)",
-          "meta": "Vigília / Jurídico"
-        },
-        {
-          "title": "005 - Estratégia de Mensageria",
-          "content": "FCM + Phoenix Channels + Edge Functions para notificações em tempo real",
-          "meta": "Vigília / High_Tech"
-        },
-        {
-          "title": "009 - Setup do Ambiente",
-          "content": "Supabase CLI, Docker, Next.js scaffolding, variáveis de ambiente",
-          "meta": "Vigília / DevOps"
-        },
-        {
-          "title": "011 - Arquitetura Geral",
-          "content": "Stack tecnológica completa e padrões arquiteturais",
-          "meta": "Vigília / Frontend"
-        },
-        {
-          "title": "022 - Implantação",
-          "content": "Deploy, rollback e suporte - Alpha (HUERB) → Beta → PRD",
-          "meta": "Vigília / Operations"
-        }
+        { "label": "Item", "value": "Your data here", "meta": "Edit memories.json" }
       ]
     }
-  ],
-  "palace_stats": {
-    "total_drawers": 665,
-    "wings": [
-      { "name": "docs", "rooms": ["general: 604", "frontend: 54"] },
-      { "name": "user_info", "rooms": ["general: 3", "technical: 4"] }
-    ]
-  }
+  ]
 }

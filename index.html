@@ -3,91 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory Palace - Willian's Memories</title>
+    <title>Memory Palace - Willian</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: 'Inter', sans-serif;
-            background: #0d1117;
-            color: #e6edf3;
+            font-family: 'Space Grotesk', sans-serif;
+            background: #0a0a0f;
+            color: #fff;
             overflow: hidden;
             height: 100vh;
         }
         
         .app {
             display: grid;
-            grid-template-columns: 280px 1fr 380px;
-            grid-template-rows: 64px 1fr;
+            grid-template-columns: 260px 1fr 360px;
+            grid-template-rows: 60px 1fr;
             height: 100vh;
         }
         
         /* Header */
         .header {
             grid-column: 1 / -1;
-            background: #161b22;
-            border-bottom: 1px solid #30363d;
+            background: linear-gradient(180deg, #12121a 0%, #0a0a0f 100%);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
             display: flex;
             align-items: center;
-            padding: 0 24px;
-            gap: 24px;
+            padding: 0 20px;
+            gap: 20px;
         }
         
         .logo {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
         }
         
         .logo-icon {
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(135deg, #00f5d4, #9b5de5);
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6, #d946ef);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
+            font-size: 20px;
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
         }
         
         .logo h1 {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
-        .logo-sub {
-            font-size: 11px;
-            color: #8b949e;
+        .logo span {
+            font-size: 10px;
+            color: #6b7280;
         }
         
         .search {
             flex: 1;
-            max-width: 400px;
+            max-width: 320px;
         }
         
         .search input {
             width: 100%;
-            padding: 10px 16px;
-            background: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            color: #e6edf3;
-            font-size: 14px;
+            padding: 10px 16px 10px 40px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 13px;
         }
         
         .search input:focus {
             outline: none;
-            border-color: #00f5d4;
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.1);
         }
         
         .stats {
             display: flex;
-            gap: 28px;
+            gap: 24px;
         }
         
         .stat {
@@ -95,67 +100,65 @@
         }
         
         .stat-value {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 700;
-            color: #00f5d4;
+            background: linear-gradient(135deg, #6366f1, #d946ef);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .stat-label {
-            font-size: 10px;
-            color: #8b949e;
+            font-size: 9px;
+            color: #6b7280;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
         }
         
         /* Sidebar */
         .sidebar {
-            background: #161b22;
-            border-right: 1px solid #30363d;
-            padding: 20px 16px;
+            background: #0e0e14;
+            border-right: 1px solid rgba(255,255,255,0.04);
+            padding: 16px;
             overflow-y: auto;
         }
         
-        .section-title {
+        .sidebar-title {
             font-size: 10px;
             font-weight: 600;
-            color: #8b949e;
+            color: #6b7280;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             margin-bottom: 12px;
-            padding-left: 4px;
         }
         
         .theme-card {
-            background: #0d1117;
-            border: 1px solid #30363d;
+            background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid rgba(255,255,255,0.05);
             border-radius: 12px;
-            padding: 14px;
+            padding: 12px;
             margin-bottom: 8px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
             position: relative;
+            overflow: hidden;
         }
         
         .theme-card::before {
             content: '';
             position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-            background: var(--color);
-            border-radius: 12px 0 0 12px;
-            opacity: 0.7;
+            inset: 0;
+            background: linear-gradient(135deg, var(--glow), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
         
-        .theme-card:hover {
+        .theme-card:hover, .theme-card.active {
             border-color: var(--color);
             transform: translateX(4px);
         }
         
-        .theme-card.active {
-            border-color: var(--color);
-            background: rgba(255,255,255,0.02);
+        .theme-card:hover::before, .theme-card.active::before {
+            opacity: 0.15;
         }
         
         .theme-header {
@@ -166,43 +169,81 @@
         }
         
         .theme-icon {
-            font-size: 22px;
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--color), var(--color-dark));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
         }
         
         .theme-name {
+            font-size: 13px;
             font-weight: 600;
-            font-size: 14px;
         }
         
-        .theme-meta {
-            font-size: 11px;
-            color: #8b949e;
+        .theme-count {
+            font-size: 10px;
+            color: #6b7280;
         }
         
-        .theme-preview {
+        .theme-items {
             display: flex;
             flex-wrap: wrap;
             gap: 4px;
         }
         
-        .preview-tag {
+        .theme-item {
             font-size: 10px;
-            padding: 2px 8px;
+            padding: 3px 8px;
             background: rgba(255,255,255,0.04);
-            border-radius: 8px;
-            color: #8b949e;
+            border-radius: 6px;
+            color: #9ca3af;
         }
         
         /* Main */
         .main {
             position: relative;
-            background: radial-gradient(ellipse at center, #1a1f2e 0%, #0d1117 100%);
-            overflow: hidden;
+            background: radial-gradient(ellipse at center, #12121a 0%, #0a0a0f 60%);
         }
         
         #network {
             width: 100%;
             height: 100%;
+        }
+        
+        /* Graph styles */
+        .node-main circle {
+            filter: drop-shadow(0 0 15px var(--glow-color));
+        }
+        
+        .node-main:hover circle {
+            filter: drop-shadow(0 0 25px var(--glow-color));
+        }
+        
+        .node-sub circle {
+            opacity: 0.8;
+        }
+        
+        .node-label {
+            font-size: 11px;
+            fill: #fff;
+            text-anchor: middle;
+            font-weight: 500;
+        }
+        
+        .node-icon {
+            font-size: 16px;
+            text-anchor: middle;
+            dominant-baseline: middle;
+        }
+        
+        .link {
+            stroke: var(--link-color);
+            stroke-opacity: 0.3;
+            stroke-width: 1.5;
         }
         
         .controls {
@@ -211,35 +252,40 @@
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 8px;
-            background: #161b22;
-            padding: 8px;
+            gap: 6px;
+            background: rgba(14, 14, 20, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 6px;
             border-radius: 12px;
-            border: 1px solid #30363d;
+            border: 1px solid rgba(255,255,255,0.08);
         }
         
-        .ctrl-btn {
-            width: 40px;
-            height: 40px;
-            background: #0d1117;
-            border: 1px solid #30363d;
+        .ctrl {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
             border-radius: 8px;
-            color: #e6edf3;
+            color: #9ca3af;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        .ctrl-btn:hover {
-            background: #1f6feb;
-            border-color: #1f6feb;
+        .ctrl:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: #6366f1;
+            color: #fff;
         }
         
         /* Detail Panel */
         .detail {
-            background: #161b22;
-            border-left: 1px solid #30363d;
-            padding: 20px;
+            background: #0e0e14;
+            border-left: 1px solid rgba(255,255,255,0.04);
+            padding: 16px;
             overflow-y: auto;
         }
         
@@ -249,13 +295,14 @@
             align-items: center;
             justify-content: center;
             height: 100%;
-            color: #8b949e;
+            color: #6b7280;
             text-align: center;
         }
         
         .detail-empty-icon {
-            font-size: 56px;
-            margin-bottom: 16px;
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.5;
         }
         
         .detail-header {
@@ -264,538 +311,487 @@
             gap: 14px;
             margin-bottom: 20px;
             padding-bottom: 16px;
-            border-bottom: 1px solid #30363d;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
         }
         
         .detail-icon {
-            width: 56px;
-            height: 56px;
+            width: 52px;
+            height: 52px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
-            border: 2px solid var(--color, #00f5d4);
-            background: rgba(0,245,212,0.1);
+            font-size: 26px;
+            background: linear-gradient(135deg, var(--color), var(--color-dark));
+            box-shadow: 0 0 30px var(--glow);
         }
         
         .detail-title {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 700;
             margin-bottom: 4px;
         }
         
         .detail-subtitle {
             font-size: 12px;
-            color: var(--color, #8b949e);
+            color: var(--color);
         }
         
         .detail-desc {
-            font-size: 14px;
-            line-height: 1.7;
-            color: #c9d1d9;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #9ca3af;
             margin-bottom: 20px;
         }
         
         .detail-section {
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
         
-        .section-label {
+        .section-title {
             font-size: 10px;
             font-weight: 600;
-            color: #8b949e;
+            color: #6b7280;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 12px;
-        }
-        
-        .memory-list {
-            list-style: none;
+            margin-bottom: 10px;
         }
         
         .memory-item {
-            padding: 12px 0;
-            border-bottom: 1px solid #21262d;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
         }
         
         .memory-item:last-child {
             border-bottom: none;
         }
         
-        .memory-title {
-            font-size: 13px;
-            color: #8b949e;
-            margin-bottom: 4px;
+        .memory-label {
+            font-size: 10px;
+            color: #6b7280;
+            margin-bottom: 2px;
         }
         
-        .memory-content {
-            font-size: 14px;
+        .memory-value {
+            font-size: 13px;
             font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
         
         .memory-meta {
-            font-size: 11px;
-            color: #6e7681;
-            margin-top: 4px;
+            font-size: 10px;
+            color: #4b5563;
+            margin-top: 2px;
         }
         
-        .detail-tags {
+        .tags {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
         }
         
         .tag {
+            font-size: 10px;
             padding: 4px 10px;
-            background: rgba(0,245,212,0.1);
-            border: 1px solid rgba(0,245,212,0.2);
-            border-radius: 12px;
-            font-size: 11px;
-            color: #00f5d4;
-        }
-        
-        /* Graph styles */
-        .node circle {
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .node circle:hover {
-            filter: brightness(1.2);
-        }
-        
-        .node text {
-            pointer-events: none;
-            font-size: 12px;
-            fill: #fff;
-            text-anchor: middle;
-        }
-        
-        .link {
-            stroke: #30363d;
-            stroke-opacity: 0.4;
-            stroke-width: 2;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 8px;
+            color: #a5b4fc;
         }
         
         /* Tooltip */
         .tooltip {
             position: fixed;
-            background: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            padding: 12px 16px;
-            font-size: 13px;
+            background: #1a1a24;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 10px 14px;
             pointer-events: none;
             opacity: 0;
             transition: opacity 0.15s;
             z-index: 1000;
-            max-width: 300px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            max-width: 240px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
         
         .tooltip.show { opacity: 1; }
         
         .tooltip-title {
             font-weight: 600;
-            margin-bottom: 4px;
+            font-size: 12px;
+            margin-bottom: 2px;
         }
         
         .tooltip-desc {
-            color: #8b949e;
-            font-size: 12px;
+            font-size: 11px;
+            color: #9ca3af;
         }
-        
-        .hidden { display: none; }
     </style>
 </head>
 <body>
     <div class="app">
         <header class="header">
             <div class="logo">
-                <div class="logo-icon">🏛️</div>
+                <div class="logo-icon">🧠</div>
                 <div>
                     <h1>MEMORY PALACE</h1>
-                    <div class="logo-sub">Willian's Neural Network</div>
+                    <span>Neural Universe • Willian</span>
                 </div>
             </div>
             <div class="search">
-                <input type="text" id="search" placeholder="Buscar memórias...">
+                <input type="text" id="search" placeholder="Buscar...">
             </div>
             <div class="stats">
                 <div class="stat">
                     <div class="stat-value" id="theme-count">0</div>
-                    <div class="stat-label">Temas</div>
+                    <div class="stat-label">Universos</div>
                 </div>
                 <div class="stat">
                     <div class="stat-value" id="memory-count">0</div>
-                    <div class="stat-label">Memórias</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value" id="drawer-count">0</div>
-                    <div class="stat-label">Drawers</div>
+                    <div class="stat-label">Núcleos</div>
                 </div>
             </div>
         </header>
         
         <aside class="sidebar">
-            <div class="section-title">Temas</div>
+            <div class="sidebar-title">Universos</div>
             <div id="themes"></div>
         </aside>
         
         <main class="main">
             <svg id="network"></svg>
             <div class="controls">
-                <button class="ctrl-btn" onclick="zoomIn()">➕</button>
-                <button class="ctrl-btn" onclick="zoomOut()">➖</button>
-                <button class="ctrl-btn" onclick="resetZoom()">🔄</button>
+                <button class="ctrl" onclick="zoomIn()">➕</button>
+                <button class="ctrl" onclick="zoomOut()">➖</button>
+                <button class="ctrl" onclick="resetView()">⟳</button>
             </div>
         </main>
         
         <aside class="detail" id="detail">
-            <div class="detail-empty" id="detail-empty">
-                <div class="detail-empty-icon">🧠</div>
-                <div>Selecione um tema para ver as memórias</div>
+            <div class="detail-empty">
+                <div class="detail-empty-icon">🌌</div>
+                <div>Selecione um núcleo para explorar</div>
             </div>
         </aside>
     </div>
     
     <div class="tooltip" id="tooltip">
-        <div class="tooltip-title" id="tooltip-title"></div>
-        <div class="tooltip-desc" id="tooltip-desc"></div>
+        <div class="tooltip-title" id="tt-title"></div>
+        <div class="tooltip-desc" id="tt-desc"></div>
     </div>
 
     <script>
-        // Load memory data
-        let memoryData = null;
-        
-        async function loadMemories() {
-            try {
-                const response = await fetch('memories.json');
-                memoryData = await response.json();
-                init();
-            } catch (e) {
-                console.error('Failed to load memories:', e);
-                // Fallback inline data
-                memoryData = getInlineData();
-                init();
-            }
-        }
-        
-        function getInlineData() {
-            return {
-                profile: { name: "Willian", alias: "Walbarellos", age: 30 },
-                themes: [
-                    {
-                        id: "identity", name: "Identidade", icon: "👤", color: "#00ff87",
-                        description: "Perfil pessoal e profissional",
-                        memories: [
-                            { title: "Nome", content: "Willian", meta: "Nome completo" },
-                            { title: "Apelido", content: "Walbarellos", meta: "Username Linux" },
-                            { title: "Idade", content: "30 anos", meta: "Nascido em 1996" },
-                            { title: "Origem", content: "🇧🇷 Brasil", meta: "País de origem" }
-                        ]
-                    },
-                    {
-                        id: "languages", name: "Idiomas", icon: "💬", color: "#00bbf9",
-                        description: "Idiomas falados",
-                        memories: [
-                            { title: "Nativo", content: "🇧🇷 Português (BR)", meta: "Língua nativa" },
-                            { title: "Fluente", content: "🇺🇸 English (US)", meta: "Profissional" },
-                            { title: "Fluente", content: "🇪🇸 Español", meta: "Conversação" },
-                            { title: "Interesse", content: "✡️ עברית (Hebrew)", meta: "Cultura judaica" }
-                        ]
-                    },
-                    {
-                        id: "interests", name: "Interesses", icon: "❤️", color: "#c084fc",
-                        description: "Áreas de interesse pessoal",
-                        memories: [
-                            { title: "Carreira", content: "💻 Engenharia de Software", meta: "Paixão e profissão" },
-                            { title: "Cultura", content: "🎌 Anime & Mangá", meta: "Entretenimento" },
-                            { title: "Hobby", content: "🎮 Video Games", meta: "Gamer" },
-                            { title: "Finanças", content: "₿ Criptomoedas", meta: "Blockchain" },
-                            { title: "Cultura", content: "🇮🇱 Israel", meta: "Startup Nation" },
-                            { title: "Religião", content: "✡️ Judaísmo", meta: "Tradição" }
-                        ]
-                    },
-                    {
-                        id: "tech", name: "Tecnologias", icon: "⚙️", color: "#fb923c",
-                        description: "Stack tecnológico",
-                        memories: [
-                            { title: "Sistema", content: "🐧 Arch Linux", meta: "OS principal" },
-                            { title: "Linguagem", content: "🐍 Python", meta: "Scripting & AI" },
-                            { title: "Backend", content: "🔷 Supabase", meta: "BaaS" },
-                            { title: "IA", content: "⚡ OpenCode", meta: "Coding Assistant" },
-                            { title: "Memória", content: "🏛️ MemPalace", meta: "AI Memory" },
-                            { title: "Agente", content: "🤖 Hermes", meta: "AI Agent" }
-                        ]
-                    },
-                    {
-                        id: "projects", name: "Projetos", icon: "🚀", color: "#f472b6",
-                        description: "Projetos em desenvolvimento",
-                        memories: [
-                            { title: "Vigília", content: "Marketplace para acompanhantes hospitalares", meta: "Projeto principal" },
-                            { title: "Supabase", content: "Backend as a Service", meta: "PostgreSQL, Auth, Realtime" }
-                        ]
-                    }
-                ],
-                palace_stats: { total_drawers: 665 }
-            };
-        }
-        
-        function init() {
-            // Update stats
-            document.getElementById('theme-count').textContent = memoryData.themes.length;
-            const totalMemories = memoryData.themes.reduce((acc, t) => acc + (t.memories?.length || 0), 0);
-            document.getElementById('memory-count').textContent = totalMemories;
-            document.getElementById('drawer-count').textContent = memoryData.palace_stats?.total_drawers || '665';
-            
-            // Create theme cards
-            const themesEl = document.getElementById('themes');
-            memoryData.themes.forEach(theme => {
-                const card = document.createElement('div');
-                card.className = 'theme-card';
-                card.style.setProperty('--color', theme.color);
-                card.dataset.theme = theme.id;
-                
-                const previewItems = (theme.memories || []).slice(0, 3);
-                card.innerHTML = `
-                    <div class="theme-header">
-                        <span class="theme-icon">${theme.icon}</span>
-                        <div>
-                            <div class="theme-name">${theme.name}</div>
-                            <div class="theme-meta">${previewItems.length} memórias</div>
-                        </div>
+        // Memory Data
+        const memories = {
+            themes: [
+                {
+                    id: "identity", name: "Identidade", icon: "👤", 
+                    color: "#10b981", colorDark: "#059669", glow: "rgba(16, 185, 129, 0.3)",
+                    memories: [
+                        { label: "Nome", value: "Willian", meta: "Pessoal" },
+                        { label: "Username", value: "Walbarellos", meta: "Linux" },
+                        { label: "Idade", value: "30 anos", meta: "Nasc: 1996" },
+                        { label: "País", value: "🇧🇷 Brasil", meta: "Origem" }
+                    ]
+                },
+                {
+                    id: "languages", name: "Idiomas", icon: "💬", 
+                    color: "#3b82f6", colorDark: "#2563eb", glow: "rgba(59, 130, 246, 0.3)",
+                    memories: [
+                        { label: "Nativo", value: "🇧🇷 Português", meta: "BR" },
+                        { label: "Fluente", value: "🇺🇸 English", meta: "US" },
+                        { label: "Fluente", value: "🇪🇸 Español", meta: "ES" },
+                        { label: "Estudo", value: "✡️ עברית", meta: "Hebrew" }
+                    ]
+                },
+                {
+                    id: "interests", name: "Interesses", icon: "❤️", 
+                    color: "#ec4899", colorDark: "#db2777", glow: "rgba(236, 72, 153, 0.3)",
+                    memories: [
+                        { label: "Carreira", value: "💻 Software Eng.", meta: "Paixão" },
+                        { label: "Hobby", value: "🎌 Anime & Manga", meta: "Cultura" },
+                        { label: "Hobby", value: "🎮 Games", meta: "Gamer" },
+                        { label: "Finanças", value: "₿ Crypto", meta: "Blockchain" },
+                        { label: "Cultura", value: "🇮🇱 Israel", meta: "Startup Nation" },
+                        { label: "Religião", value: "✡️ Judaísmo", meta: "Tradição" }
+                    ]
+                },
+                {
+                    id: "tech", name: "Tech Stack", icon: "⚙️", 
+                    color: "#f59e0b", colorDark: "#d97706", glow: "rgba(245, 158, 11, 0.3)",
+                    memories: [
+                        { label: "OS", value: "🐧 Arch Linux", meta: "Principal" },
+                        { label: "Linguagem", value: "🐍 Python", meta: "Script & AI" },
+                        { label: "Mobile", value: "📱 Kotlin", meta: "Android" },
+                        { label: "Backend", value: "🔷 Supabase", meta: "BaaS" },
+                        { label: "IA", value: "⚡ OpenCode", meta: "Assistant" },
+                        { label: "Memória", value: "🏛️ MemPalace", meta: "AI Memory" },
+                        { label: "Agente", value: "🤖 Hermes", meta: "AI Agent" }
+                    ]
+                },
+                {
+                    id: "projects", name: "Projetos", icon: "🚀", 
+                    color: "#8b5cf6", colorDark: "#7c3aed", glow: "rgba(139, 92, 246, 0.3)",
+                    memories: [
+                        { label: "Principal", value: "Vigília", meta: "Marketplace" },
+                        { label: "Backend", value: "Supabase", meta: "PostgreSQL" },
+                        { label: "Mobile", value: "Kotlin/Android", meta: "Compose" },
+                        { label: "Cloud", value: "Firebase", meta: "FCM" }
+                    ]
+                },
+                {
+                    id: "docs", name: "Documentos", icon: "📄", 
+                    color: "#06b6d4", colorDark: "#0891b2", glow: "rgba(6, 182, 212, 0.3)",
+                    memories: [
+                        { label: "Docs", value: "001-022", meta: "Mempalace" },
+                        { label: "Stack", value: "Tech Docs", meta: "Vigília" },
+                        { label: "Arquitetura", value: "011", meta: "Sistema" }
+                    ]
+                }
+            ]
+        };
+
+        // Stats
+        document.getElementById('theme-count').textContent = memories.themes.length;
+        document.getElementById('memory-count').textContent = memories.themes.reduce((a, t) => a + t.memories.length, 0);
+
+        // Create theme cards
+        const themesEl = document.getElementById('themes');
+        memories.themes.forEach(theme => {
+            const card = document.createElement('div');
+            card.className = 'theme-card';
+            card.style.setProperty('--color', theme.color);
+            card.style.setProperty('--color-dark', theme.colorDark);
+            card.style.setProperty('--glow', theme.glow);
+            card.dataset.theme = theme.id;
+            card.innerHTML = `
+                <div class="theme-header">
+                    <div class="theme-icon">${theme.icon}</div>
+                    <div>
+                        <div class="theme-name">${theme.name}</div>
+                        <div class="theme-count">${theme.memories.length} núcleos</div>
                     </div>
-                    <div class="theme-preview">
-                        ${previewItems.map(m => `<span class="preview-tag">${m.content}</span>`).join('')}
-                    </div>
-                `;
-                
-                card.addEventListener('click', () => showTheme(theme));
-                themesEl.appendChild(card);
-            });
-            
-            // Initialize graph
-            initGraph();
-        }
-        
-        // D3 Network Graph
-        function initGraph() {
-            const container = document.querySelector('.main');
-            const width = container.clientWidth;
-            const height = container.clientHeight;
-            
-            const svg = d3.select('#network')
-                .attr('width', width)
-                .attr('height', height);
-            
-            const g = svg.append('g');
-            
-            const zoom = d3.zoom().scaleExtent([0.3, 3]).on('zoom', e => g.attr('transform', e.transform));
-            svg.call(zoom);
-            
-            // Create nodes
-            const nodes = memoryData.themes.map((theme, i) => ({
-                id: theme.id,
-                label: theme.name,
-                icon: theme.icon,
-                color: theme.color,
-                theme: theme,
-                x: width / 2 + (i - 2) * 220,
-                y: height / 2
-            }));
-            
-            // Create sub-nodes (memories)
-            const subNodes = [];
-            memoryData.themes.forEach(theme => {
-                const baseX = nodes.find(n => n.id === theme.id)?.x || width / 2;
-                const baseY = nodes.find(n => n.id === theme.id)?.y || height / 2;
-                
-                (theme.memories || []).forEach((mem, i) => {
-                    const angle = (i / (theme.memories || []).length) * 2 * Math.PI - Math.PI / 2;
-                    const radius = 130;
-                    subNodes.push({
-                        id: `${theme.id}-${i}`,
-                        label: mem.content,
-                        parent: theme.id,
-                        color: theme.color,
-                        x: baseX + Math.cos(angle) * radius,
-                        y: baseY + Math.sin(angle) * radius
-                    });
+                </div>
+                <div class="theme-items">
+                    ${theme.memories.slice(0, 3).map(m => `<span class="theme-item">${m.value}</span>`).join('')}
+                    ${theme.memories.length > 3 ? `<span class="theme-item">+${theme.memories.length - 3}</span>` : ''}
+                </div>
+            `;
+            card.addEventListener('click', () => showDetail(theme));
+            themesEl.appendChild(card);
+        });
+
+        // D3 Network
+        const container = document.querySelector('.main');
+        const W = container.clientWidth;
+        const H = container.clientHeight;
+
+        const svg = d3.select('#network').attr('width', W).attr('height', H);
+        const g = svg.append('g');
+
+        // Zoom
+        const zoom = d3.zoom().scaleExtent([0.2, 3]).on('zoom', e => g.attr('transform', e.transform));
+        svg.call(zoom);
+
+        // Create nodes
+        const mainNodes = memories.themes.map((t, i) => ({
+            ...t,
+            x: W/2 + Math.cos(i / memories.themes.length * 2 * Math.PI) * 180,
+            y: H/2 + Math.sin(i / memories.themes.length * 2 * Math.PI) * 150
+        }));
+
+        const subNodes = [];
+        mainNodes.forEach(theme => {
+            const count = theme.memories.length;
+            theme.memories.forEach((mem, i) => {
+                const angle = (i / count) * 2 * Math.PI - Math.PI/2;
+                const radius = 90;
+                subNodes.push({
+                    id: `${theme.id}-${i}`,
+                    label: mem.value,
+                    theme: theme.id,
+                    parent: theme.id,
+                    color: theme.color,
+                    x: theme.x + Math.cos(angle) * radius,
+                    y: theme.y + Math.sin(angle) * radius
                 });
             });
+        });
+
+        // Links
+        const links = subNodes.map(n => ({ source: n.parent, target: n.id }));
+        const linkColor = {};
+        memories.themes.forEach(t => linkColor[t.id] = t.color);
+
+        g.append('g').selectAll('line').data(links).join('line')
+            .attr('class', 'link')
+            .attr('stroke', d => linkColor[d.source] || '#fff');
+
+        // Main nodes
+        const mainG = g.append('g').selectAll('g').data(mainNodes).join('g')
+            .attr('class', 'node-main')
+            .style('--glow-color', t => t.color)
+            .call(d3.drag()
+                .on('start', (e, d) => { if (!e.active) sim.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
+                .on('drag', (e, d) => { d.fx = e.x; d.fy = e.y; })
+                .on('end', (e, d) => { if (!e.active) sim.alphaTarget(0); d.fx = null; d.fy = null; }));
+
+        mainG.append('circle')
+            .attr('r', 38)
+            .attr('fill', t => t.color)
+            .attr('stroke', '#fff')
+            .attr('stroke-width', 2);
+
+        mainG.append('text')
+            .attr('class', 'node-icon')
+            .attr('dy', '0.1em')
+            .attr('font-size', '22px')
+            .text(t => t.icon);
+
+        mainG.append('text')
+            .attr('class', 'node-label')
+            .attr('dy', 55)
+            .text(t => t.name);
+
+        // Sub nodes
+        const subG = g.append('g').selectAll('g').data(subNodes).join('g')
+            .attr('class', 'node-sub');
+
+        subG.append('circle')
+            .attr('r', 14)
+            .attr('fill', d => d.color + '30')
+            .attr('stroke', d => d.color)
+            .attr('stroke-width', 1.5);
+
+        subG.append('text')
+            .attr('dy', 4)
+            .attr('font-size', '9px')
+            .attr('fill', '#fff')
+            .attr('text-anchor', 'middle')
+            .text(d => d.label.length > 8 ? d.label.substring(0, 8) : d.label);
+
+        // Interactions
+        mainG.on('click', (e, d) => showDetail(d));
+        mainG.on('mouseenter', e => showTooltip(e, `${d3.select(e.currentTarget).datum().icon} ${d3.select(e.currentTarget).datum().name}`, 'Clique para ver detalhes'));
+        mainG.on('mouseleave', hideTooltip);
+
+        subG.on('click', (e, d) => {
+            const theme = memories.themes.find(t => t.id === d.theme);
+            showDetail(theme);
+        });
+        subG.on('mouseenter', e => {
+            const d = d3.select(e.currentTarget).datum();
+            showTooltip(e, d.label, d.theme);
+        });
+        subG.on('mouseleave', hideTooltip);
+
+        // Simulation
+        const sim = d3.forceSimulation([...mainNodes, ...subNodes])
+            .force('link', d3.forceLink(links).id(d => d.id).distance(60))
+            .force('charge', d3.forceManyBody().strength(-150))
+            .force('center', d3.forceCenter(W/2, H/2))
+            .force('collision', d3.forceCollide().radius(30));
+
+        sim.on('tick', () => {
+            g.selectAll('line')
+                .attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+                .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+            mainG.attr('transform', d => `translate(${d.x},${d.y})`);
+            subG.attr('transform', d => `translate(${d.x},${d.y})`);
+        });
+
+        // Click outside
+        svg.on('click', () => {
+            resetHighlight();
+            document.getElementById('detail').innerHTML = `
+                <div class="detail-empty">
+                    <div class="detail-empty-icon">🌌</div>
+                    <div>Selecione um núcleo para explorar</div>
+                </div>`;
+        });
+
+        // Functions
+        function showDetail(theme) {
+            document.querySelectorAll('.theme-card').forEach(c => 
+                c.classList.toggle('active', c.dataset.theme === theme.id));
             
-            // Links
-            const links = subNodes.map(n => ({ source: n.parent, target: n.id }));
-            
-            const link = g.append('g').selectAll('line').data(links).join('line')
-                .attr('class', 'link');
-            
-            const node = g.append('g').selectAll('g').data(nodes).join('g')
-                .attr('class', 'node')
-                .call(d3.drag()
-                    .on('start', (e, d) => { if (!e.active) sim.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
-                    .on('drag', (e, d) => { d.fx = e.x; d.fy = e.y; })
-                    .on('end', (e, d) => { if (!e.active) sim.alphaTarget(0); d.fx = null; d.fy = null; }));
-            
-            node.append('circle').attr('r', 40).attr('fill', d => d.color)
-                .attr('stroke', '#fff').attr('stroke-width', 3);
-            node.append('text').text(d => d.icon).attr('dy', '0.35em').attr('font-size', '24px');
-            node.append('text').text(d => d.label).attr('dy', 55).attr('font-size', '12px').attr('font-weight', '600');
-            
-            // Sub-nodes
-            const sub = g.append('g').selectAll('g').data(subNodes).join('g')
-                .attr('class', 'node');
-            
-            sub.append('circle').attr('r', 18).attr('fill', d => d.color + '40').attr('stroke', d => d.color).attr('stroke-width', 2);
-            sub.append('text').text(d => d.label.length > 12 ? d.label.substring(0, 12) + '..' : d.label)
-                .attr('dy', 30).attr('font-size', '9px').attr('fill', '#8b949e');
-            
-            // Interactions
-            node.on('click', (e, d) => showTheme(d.theme));
-            node.on('mouseenter', (e, d) => showTooltip(e, `${d.icon} ${d.label}`, d.theme.description));
-            node.on('mouseleave', hideTooltip);
-            
-            sub.on('click', (e, d) => {
-                const theme = memoryData.themes.find(t => t.id === d.parent);
-                showTheme(theme);
-            });
-            
-            const sim = d3.forceSimulation([...nodes, ...subNodes])
-                .force('link', d3.forceLink(links).id(d => d.id).distance(80))
-                .force('charge', d3.forceManyBody().strength(-250))
-                .force('center', d3.forceCenter(width / 2, height / 2))
-                .force('collision', d3.forceCollide().radius(50));
-            
-            sim.on('tick', () => {
-                link.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
-                    .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
-                node.attr('transform', d => `translate(${d.x},${d.y})`);
-                sub.attr('transform', d => `translate(${d.x},${d.y})`);
-            });
-            
-            // Click outside
-            svg.on('click', () => {
-                resetHighlight();
-                document.getElementById('detail').innerHTML = `
-                    <div class="detail-empty">
-                        <div class="detail-empty-icon">🧠</div>
-                        <div>Selecione um tema para ver as memórias</div>
-                    </div>
-                `;
-            });
-            
-            // Initial zoom
-            svg.call(zoom.transform, d3.zoomIdentity.translate(width/4, height/4).scale(0.9));
-        }
-        
-        function showTheme(theme) {
-            // Update sidebar
-            document.querySelectorAll('.theme-card').forEach(c => {
-                c.classList.toggle('active', c.dataset.theme === theme.id);
-            });
-            
-            // Show detail
-            const detail = document.getElementById('detail');
-            const memList = (theme.memories || []).map(m => `
-                <li class="memory-item">
-                    <div class="memory-title">${m.title}</div>
-                    <div class="memory-content">${m.content}</div>
-                    ${m.meta ? `<div class="memory-meta">${m.meta}</div>` : ''}
-                    ${m.details ? Object.entries(m.details).map(([k,v]) => `<div class="memory-meta">${k}: ${v}</div>`).join('') : ''}
-                </li>
-            `).join('');
-            
-            detail.innerHTML = `
-                <div style="--color: ${theme.color}">
+            document.getElementById('detail').innerHTML = `
+                <div style="--color: ${theme.color}; --color-dark: ${theme.colorDark}; --glow: ${theme.glow}">
                     <div class="detail-header">
                         <div class="detail-icon">${theme.icon}</div>
                         <div>
                             <div class="detail-title">${theme.name}</div>
-                            <div class="detail-subtitle">${theme.description}</div>
+                            <div class="detail-subtitle">${theme.memories.length} núcleos de memória</div>
                         </div>
                     </div>
-                    
-                    <div class="detail-desc">${theme.description || 'Clique em um tema para ver as memórias.'}</div>
-                    
-                    ${theme.memories?.length ? `
                     <div class="detail-section">
-                        <div class="section-label">Memórias (${theme.memories.length})</div>
-                        <ul class="memory-list">
-                            ${memList}
-                        </ul>
+                        <div class="section-title">Núcleos</div>
+                        ${theme.memories.map(m => `
+                            <div class="memory-item">
+                                <div class="memory-label">${m.label}</div>
+                                <div class="memory-value">${m.value}</div>
+                                <div class="memory-meta">${m.meta}</div>
+                            </div>
+                        `).join('')}
                     </div>
-                    ` : ''}
-                    
                     <div class="detail-section">
-                        <div class="section-label">Tags</div>
-                        <div class="detail-tags">
+                        <div class="section-title">Tags</div>
+                        <div class="tags">
                             <span class="tag">#${theme.id}</span>
-                            <span class="tag">#${memoryData.profile.alias}</span>
+                            <span class="tag">#Willian</span>
+                            <span class="tag">#memories</span>
                         </div>
                     </div>
-                </div>
-            `;
+                </div>`;
             
             highlightTheme(theme.id);
         }
-        
-        function highlightTheme(themeId) {
-            d3.selectAll('.node circle').style('opacity', d => 
-                d.theme?.id === themeId ? 1 : 0.3
-            );
-            d3.selectAll('.link').style('opacity', d =>
-                d.source === themeId ? 0.8 : 0.1
-            );
+
+        function highlightTheme(id) {
+            mainG.style('opacity', d => d.id === id ? 1 : 0.3);
+            subG.style('opacity', d => d.theme === id ? 1 : 0.1);
+            g.selectAll('line').style('opacity', d => d.source === id ? 0.8 : 0.05);
         }
-        
+
         function resetHighlight() {
-            d3.selectAll('.node circle').style('opacity', 1);
-            d3.selectAll('.link').style('opacity', 0.4);
+            mainG.style('opacity', 1);
+            subG.style('opacity', 0.8);
+            g.selectAll('line').style('opacity', 0.3);
             document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
         }
-        
+
         function showTooltip(e, title, desc) {
-            document.getElementById('tooltip-title').textContent = title;
-            document.getElementById('tooltip-desc').textContent = desc;
+            document.getElementById('tt-title').textContent = title;
+            document.getElementById('tt-desc').textContent = desc;
             const tt = document.getElementById('tooltip');
             tt.style.left = (e.pageX + 15) + 'px';
-            tt.style.top = (e.pageY - 15) + 'px';
+            tt.style.top = (e.pageY - 10) + 'px';
             tt.classList.add('show');
         }
-        
+
         function hideTooltip() {
             document.getElementById('tooltip').classList.remove('show');
         }
-        
-        function zoomIn() { d3.select('#network').transition().duration(300).call(d3.zoom().scaleBy, 1.3); }
-        function zoomOut() { d3.select('#network').transition().duration(300).call(d3.zoom().scaleBy, 0.7); }
-        function resetZoom() { 
-            const w = document.querySelector('.main').clientWidth;
-            const h = document.querySelector('.main').clientHeight;
-            d3.select('#network').transition().duration(500)
-                .call(d3.zoom().transform, d3.zoomIdentity.translate(w/4, h/4).scale(0.9));
+
+        function zoomIn() { svg.transition().duration(300).call(zoom.scaleBy, 1.3); }
+        function zoomOut() { svg.transition().duration(300).call(zoom.scaleBy, 0.7); }
+        function resetView() {
+            svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity.translate(W/4, H/4).scale(0.85));
             resetHighlight();
         }
-        
+
         // Search
-        document.getElementById('search').addEventListener('input', (e) => {
+        document.getElementById('search').addEventListener('input', e => {
             const q = e.target.value.toLowerCase();
             if (!q) { resetHighlight(); return; }
-            
-            const match = memoryData.themes.find(t => 
-                t.name.toLowerCase().includes(q) ||
-                (t.memories || []).some(m => m.content.toLowerCase().includes(q))
-            );
-            if (match) highlightTheme(match.id);
+            const m = memories.themes.find(t => t.name.toLowerCase().includes(q) || t.memories.some(mem => mem.value.toLowerCase().includes(q)));
+            if (m) highlightTheme(m.id);
         });
-        
-        // Start
-        loadMemories();
+
+        // Initial view
+        svg.call(zoom.transform, d3.zoomIdentity.translate(W/4, H/4).scale(0.85));
     </script>
 </body>
 </html>
