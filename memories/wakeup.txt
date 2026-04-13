@@ -1,0 +1,47 @@
+## L0 — IDENTITY
+
+Name: Willian (also known as Walbarellos on Linux systems)
+Age: 30 years old
+Origin: Brazil 🇧🇹
+
+## L1 — ESSENTIAL STORY
+
+### Background
+- Brazilian developer, 30 years old, passionate about software engineering
+- Expert in CLI and command-line tools, prefers terminal over GUI
+- Uses Arch Linux as primary operating system
+
+### Languages
+- Native: Portuguese from Brazil (PT-BR)
+- Fluent: English (EN-US), Hebrew (עברית), Spanish
+- Interest in Hebrew connected to Israel and Judaism
+
+### Interests
+- Software Engineering (primary passion and career)
+- Anime and Manga (Japanese culture)
+- Video Games (various genres)
+- Cryptocurrencies and blockchain technology
+- Israel and Israeli culture ("Startup Nation")
+- Judaism and Hebrew language studies
+
+### Technical Stack
+- Arch Linux (daily driver)
+- Python (primary language for scripting/AI)
+- JavaScript (web development)
+- OpenCode AI assistant (v1.4.1+)
+- MemPalace (AI memory management)
+- Hermes Agent (automation and complex tasks)
+- Vigilia (development environment)
+
+### Preferences
+- Uses OpenCode for coding tasks when requested
+- Sensitive to AI model quota consumption
+- Values efficiency and automation
+
+## L2 — CONTEXT
+
+User is a full-stack developer with strong system administration skills. 
+Actively exploring AI tools and implementing them in daily workflow.
+Interested in Hebrew and Israeli culture, possibly for aliyah consideration.
+Follows cryptocurrency markets and DeFi developments.
+Gamer with diverse taste in video games.
