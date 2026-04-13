@@ -1,1020 +1,767 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory Palace - Neural Network Visualizer</title>
+    <title>Memory Palace - Willian's Neural Network</title>
     
-    <!-- Fonts (fallback to system if unavailable) -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
-    <!-- Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    
-    <!-- GSAP -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    
-    <!-- D3.js -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     
-    <!-- Particles.js -->
-    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-    
     <style>
-        :root {
-            --primary: #00f5d4;
-            --secondary: #9b5de5;
-            --accent-pink: #f15bb5;
-            --accent-yellow: #fee440;
-            --accent-orange: #ff6b35;
-            --accent-red: #ff3366;
-            --accent-blue: #00bbf9;
-            --accent-green: #00ff87;
-            
-            --bg-dark: #0a0a0f;
-            --bg-darker: #050508;
-            --bg-card: rgba(15, 15, 25, 0.8);
-            --bg-glass: rgba(255, 255, 255, 0.03);
-            
-            --text-primary: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.7);
-            --text-muted: rgba(255, 255, 255, 0.4);
-            
-            --glow-primary: 0 0 20px rgba(0, 245, 212, 0.5);
-            --glow-secondary: 0 0 20px rgba(155, 93, 229, 0.5);
-            
-            --font-display: 'Orbitron', 'Segoe UI', system-ui, sans-serif;
-            --font-body: 'Rajdhani', 'Segoe UI', system-ui, sans-serif;
-            --font-mono: 'JetBrains Mono', 'Consolas', monospace;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: var(--font-body);
-            background: var(--bg-darker);
-            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            background: #0d1117;
+            color: #e6edf3;
             overflow: hidden;
-            min-height: 100vh;
-        }
-
-        /* Background Effects */
-        #particles-js {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .grid-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(0, 245, 212, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 245, 212, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        /* Main Layout */
-        .app-container {
-            position: relative;
-            z-index: 10;
-            display: grid;
-            grid-template-columns: 300px 1fr 300px;
-            grid-template-rows: 70px 1fr;
             height: 100vh;
         }
-
+        
+        .app {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            grid-template-rows: 60px 1fr;
+            height: 100vh;
+        }
+        
         /* Header */
         .header {
             grid-column: 1 / -1;
+            background: #161b22;
+            border-bottom: 1px solid #30363d;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 0 30px;
-            background: linear-gradient(180deg, rgba(10, 10, 15, 0.95) 0%, transparent 100%);
-            border-bottom: 1px solid rgba(0, 245, 212, 0.1);
-            backdrop-filter: blur(20px);
+            padding: 0 20px;
+            gap: 30px;
         }
-
+        
         .logo {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
-
+        
         .logo-icon {
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            box-shadow: var(--glow-primary);
+            font-size: 24px;
         }
-
-        .logo-text h1 {
-            font-family: var(--font-display);
-            font-size: 1.2rem;
+        
+        .logo h1 {
+            font-size: 18px;
             font-weight: 700;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, #00f5d4, #9b5de5);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 2px;
         }
-
-        .logo-text p {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            letter-spacing: 2px;
-            text-transform: uppercase;
+        
+        .search-box {
+            flex: 1;
+            max-width: 400px;
         }
-
-        .search-container {
-            position: relative;
+        
+        .search-box input {
+            width: 100%;
+            padding: 10px 16px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            color: #e6edf3;
+            font-size: 14px;
         }
-
-        .search-input {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 10px 18px 10px 42px;
-            border-radius: 25px;
-            color: var(--text-primary);
-            font-family: var(--font-body);
-            font-size: 0.95rem;
-            width: 260px;
-            transition: all 0.3s;
-        }
-
-        .search-input:focus {
+        
+        .search-box input:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: var(--glow-primary);
+            border-color: #00f5d4;
         }
-
-        .search-icon {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-        }
-
-        .stats-bar {
+        
+        .stats {
             display: flex;
             gap: 20px;
         }
-
-        .stat-item {
+        
+        .stat {
             text-align: center;
         }
-
+        
         .stat-value {
-            font-family: var(--font-display);
-            font-size: 1.3rem;
+            font-size: 20px;
             font-weight: 700;
-            color: var(--primary);
-            text-shadow: var(--glow-primary);
+            color: #00f5d4;
         }
-
+        
         .stat-label {
-            font-size: 0.65rem;
-            color: var(--text-muted);
+            font-size: 11px;
+            color: #8b949e;
+            text-transform: uppercase;
+        }
+        
+        /* Left Panel - Categories */
+        .sidebar {
+            background: #161b22;
+            border-right: 1px solid #30363d;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .sidebar-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #8b949e;
             text-transform: uppercase;
             letter-spacing: 1px;
+            margin-bottom: 16px;
         }
-
-        /* Left Panel */
-        .left-panel {
-            background: linear-gradient(90deg, rgba(10, 10, 15, 0.98) 0%, transparent 100%);
-            padding: 25px 15px;
-            overflow-y: auto;
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .panel-title {
-            font-family: var(--font-display);
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 18px;
+        
+        .category {
             display: flex;
             align-items: center;
-            gap: 8px;
-        }
-
-        .panel-title::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(90deg, rgba(255, 255, 255, 0.1), transparent);
-        }
-
-        .category-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .category-item {
-            background: var(--bg-glass);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 14px;
+            gap: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
+            transition: all 0.2s;
         }
-
-        .category-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 3px;
-            height: 100%;
-            background: var(--category-color);
+        
+        .category:hover, .category.active {
+            border-color: var(--color);
+            background: rgba(255,255,255,0.03);
         }
-
-        .category-item:hover, .category-item.active {
-            background: rgba(var(--category-rgb), 0.1);
-            border-color: var(--category-color);
-            transform: translateX(5px);
-        }
-
-        .category-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        
         .category-icon {
             width: 36px;
             height: 36px;
-            background: rgba(var(--category-rgb), 0.2);
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
+            font-size: 18px;
+            background: var(--color);
         }
-
+        
+        .category-info {
+            flex: 1;
+        }
+        
         .category-name {
-            font-family: var(--font-display);
-            font-size: 0.85rem;
             font-weight: 600;
+            font-size: 14px;
         }
-
+        
         .category-count {
-            font-size: 0.7rem;
-            color: var(--text-muted);
+            font-size: 12px;
+            color: #8b949e;
         }
-
-        /* Canvas */
-        .canvas-container {
+        
+        /* Main Canvas */
+        .main {
             position: relative;
-            background: radial-gradient(ellipse at center, rgba(0, 245, 212, 0.05) 0%, transparent 70%);
+            background: radial-gradient(ellipse at center, #1a1f2e 0%, #0d1117 100%);
         }
-
-        #network-canvas-3d,
-        #network-canvas-2d {
+        
+        #graph {
             width: 100%;
             height: 100%;
-            display: block;
         }
-
-        #network-canvas-2d {
-            display: none;
+        
+        .node circle {
+            cursor: pointer;
+            transition: all 0.2s;
         }
-
-        /* Right Panel */
-        .right-panel {
-            background: linear-gradient(-90deg, rgba(10, 10, 15, 0.98) 0%, transparent 100%);
-            padding: 25px 15px;
-            overflow-y: auto;
-            border-left: 1px solid rgba(255, 255, 255, 0.05);
+        
+        .node circle:hover {
+            filter: brightness(1.3);
         }
-
-        .detail-card {
-            background: var(--bg-glass);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 14px;
-            padding: 20px;
-            margin-bottom: 15px;
+        
+        .node text {
+            font-size: 11px;
+            fill: #e6edf3;
+            pointer-events: none;
+            text-anchor: middle;
         }
-
-        .detail-header {
+        
+        .link {
+            stroke: #30363d;
+            stroke-opacity: 0.6;
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 15px;
+            gap: 8px;
+            background: #161b22;
+            padding: 8px;
+            border-radius: 12px;
+            border: 1px solid #30363d;
         }
-
-        .detail-node-icon {
-            width: 52px;
-            height: 52px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 14px;
+        
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            color: #e6edf3;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 16px;
+            transition: all 0.2s;
         }
-
+        
+        .control-btn:hover {
+            background: #1f6feb;
+            border-color: #1f6feb;
+        }
+        
+        /* Right Panel - Details */
+        .detail-panel {
+            background: #161b22;
+            border-left: 1px solid #30363d;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .detail-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #8b949e;
+            text-align: center;
+        }
+        
+        .detail-empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .detail-card {
+            display: none;
+        }
+        
+        .detail-card.show {
+            display: block;
+        }
+        
+        .detail-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .detail-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            background: linear-gradient(135deg, #00f5d4, #9b5de5);
+        }
+        
         .detail-title {
-            font-family: var(--font-display);
-            font-size: 1.1rem;
+            font-size: 20px;
             font-weight: 700;
+            margin-bottom: 4px;
         }
-
-        .detail-subtitle {
-            font-size: 0.8rem;
-            color: var(--text-muted);
+        
+        .detail-category {
+            font-size: 12px;
+            color: #8b949e;
+            text-transform: uppercase;
         }
-
-        .detail-description {
-            color: var(--text-secondary);
-            line-height: 1.7;
-            font-size: 0.95rem;
-            margin-bottom: 15px;
+        
+        .detail-section {
+            margin-bottom: 20px;
         }
-
+        
         .detail-section-title {
-            font-family: var(--font-display);
-            font-size: 0.65rem;
-            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+            color: #8b949e;
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 10px;
         }
-
-        .connections-list {
+        
+        .detail-description {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #c9d1d9;
+        }
+        
+        .connections {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
-            margin-bottom: 15px;
         }
-
+        
         .connection-tag {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.75rem;
+            padding: 6px 12px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 16px;
+            font-size: 12px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
         }
-
+        
         .connection-tag:hover {
-            background: rgba(0, 245, 212, 0.1);
-            border-color: var(--primary);
-            color: var(--primary);
+            border-color: #00f5d4;
+            color: #00f5d4;
         }
-
-        .tags-list {
+        
+        .tags {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
         }
-
+        
         .tag {
+            padding: 4px 10px;
             background: rgba(0, 245, 212, 0.1);
-            border: 1px solid rgba(0, 245, 212, 0.3);
-            padding: 3px 10px;
-            border-radius: 10px;
-            font-size: 0.7rem;
-            font-family: var(--font-mono);
-            color: var(--primary);
-        }
-
-        /* Empty State */
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            text-align: center;
-            padding: 30px;
-        }
-
-        .empty-icon {
-            font-size: 3.5rem;
-            margin-bottom: 15px;
-        }
-
-        .empty-title {
-            font-family: var(--font-display);
-            font-size: 1rem;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-        }
-
-        .empty-text {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            max-width: 180px;
-        }
-
-        /* Canvas Controls */
-        .canvas-controls {
-            position: absolute;
-            bottom: 25px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            padding: 10px;
-            background: rgba(10, 10, 15, 0.8);
-            backdrop-filter: blur(20px);
-            border-radius: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .control-btn {
-            width: 44px;
-            height: 44px;
-            background: var(--bg-glass);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .control-btn:hover {
-            background: rgba(0, 245, 212, 0.1);
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        /* Tooltip */
-        .node-tooltip {
-            position: fixed;
-            background: rgba(10, 10, 15, 0.95);
-            backdrop-filter: blur(20px);
             border: 1px solid rgba(0, 245, 212, 0.3);
             border-radius: 12px;
-            padding: 14px;
-            max-width: 260px;
+            font-size: 11px;
+            font-family: monospace;
+            color: #00f5d4;
+        }
+        
+        /* Tooltip */
+        .tooltip {
+            position: fixed;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 13px;
             pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
             z-index: 1000;
-            opacity: 0;
-            transform: translateY(8px);
-            transition: opacity 0.2s, transform 0.2s;
+            max-width: 250px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
         }
-
-        .node-tooltip.visible {
+        
+        .tooltip.show {
             opacity: 1;
-            transform: translateY(0);
         }
-
+        
         .tooltip-title {
-            font-family: var(--font-display);
-            font-size: 0.9rem;
             font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
-
+        
         .tooltip-desc {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
+            color: #8b949e;
+            font-size: 12px;
         }
-
-        /* Mode Toggle */
-        .mode-toggle {
-            position: fixed;
-            top: 90px;
-            right: 25px;
-            z-index: 100;
-        }
-
-        .toggle-container {
-            display: flex;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 25px;
-            padding: 3px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .toggle-btn {
-            padding: 8px 14px;
-            border: none;
-            background: transparent;
-            color: var(--text-muted);
-            font-family: var(--font-body);
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 22px;
-            transition: all 0.3s;
-        }
-
-        .toggle-btn.active {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: var(--bg-dark);
-        }
-
-        /* Loading */
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-darker);
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.6s, visibility 0.6s;
-        }
-
-        .loading-screen.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
-
-        .loading-logo {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 50px;
-            margin-bottom: 30px;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .loading-bar-container {
-            width: 250px;
-            height: 3px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .loading-bar {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            border-radius: 2px;
-            animation: loading 1.5s ease-in-out infinite;
-        }
-
-        @keyframes loading {
-            0% { width: 0; margin-left: 0; }
-            50% { width: 60%; margin-left: 20%; }
-            100% { width: 0; margin-left: 100%; }
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 2px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
     </style>
 </head>
 <body>
-    <!-- Loading -->
-    <div class="loading-screen" id="loading">
-        <div class="loading-logo">🧠</div>
-        <div class="loading-bar-container">
-            <div class="loading-bar"></div>
-        </div>
-    </div>
-
-    <!-- Background -->
-    <div id="particles-js"></div>
-    <div class="grid-bg"></div>
-
-    <!-- Mode Toggle -->
-    <div class="mode-toggle">
-        <div class="toggle-container">
-            <button class="toggle-btn active" data-mode="3d">3D</button>
-            <button class="toggle-btn" data-mode="2d">2D</button>
-        </div>
-    </div>
-
-    <!-- App -->
-    <div class="app-container">
+    <div class="app">
         <header class="header">
             <div class="logo">
-                <div class="logo-icon">🏛️</div>
-                <div class="logo-text">
-                    <h1>MEMORY PALACE</h1>
-                    <p>Neural Visualizer</p>
-                </div>
+                <span class="logo-icon">🧠</span>
+                <h1>MEMORY PALACE</h1>
             </div>
-            <div class="search-container">
-                <span class="search-icon">🔍</span>
-                <input type="text" class="search-input" id="search" placeholder="Search memories...">
+            <div class="search-box">
+                <input type="text" id="search" placeholder="Buscar memórias...">
             </div>
-            <div class="stats-bar">
-                <div class="stat-item">
+            <div class="stats">
+                <div class="stat">
                     <div class="stat-value" id="node-count">0</div>
-                    <div class="stat-label">Nodes</div>
+                    <div class="stat-label">Nós</div>
                 </div>
-                <div class="stat-item">
+                <div class="stat">
                     <div class="stat-value" id="link-count">0</div>
-                    <div class="stat-label">Links</div>
+                    <div class="stat-label">Conexões</div>
                 </div>
             </div>
         </header>
-
-        <aside class="left-panel">
-            <div class="panel-title">Categories</div>
-            <div class="category-list" id="category-list"></div>
+        
+        <aside class="sidebar">
+            <div class="sidebar-title">Categorias</div>
+            <div id="categories"></div>
         </aside>
-
-        <main class="canvas-container">
-            <canvas id="network-canvas-3d"></canvas>
-            <svg id="network-canvas-2d"></svg>
-            
-            <div class="canvas-controls">
-                <button class="control-btn" id="btn-zoom-in" title="Zoom In">➕</button>
-                <button class="control-btn" id="btn-zoom-out" title="Zoom Out">➖</button>
-                <button class="control-btn" id="btn-reset" title="Reset">🔄</button>
-                <button class="control-btn" id="btn-auto-rotate" title="Auto Rotate">🔁</button>
+        
+        <main class="main">
+            <svg id="graph"></svg>
+            <div class="controls">
+                <button class="control-btn" onclick="zoomIn()" title="Zoom +">➕</button>
+                <button class="control-btn" onclick="zoomOut()" title="Zoom -">➖</button>
+                <button class="control-btn" onclick="resetZoom()" title="Reset">🔄</button>
+                <button class="control-btn" onclick="toggleLabels()" title="Toggle Labels">🏷️</button>
             </div>
         </main>
-
-        <aside class="right-panel">
-            <div class="panel-title">Node Details</div>
-            <div id="detail-panel">
-                <div class="empty-state">
-                    <div class="empty-icon">🎯</div>
-                    <div class="empty-title">Select a Node</div>
-                    <div class="empty-text">Click on any node in the network to view details</div>
+        
+        <aside class="detail-panel">
+            <div class="sidebar-title">Detalhes</div>
+            <div class="detail-empty" id="detail-empty">
+                <div class="detail-empty-icon">👆</div>
+                <div>Clique em um nó para ver detalhes</div>
+            </div>
+            <div class="detail-card" id="detail-card">
+                <div class="detail-header">
+                    <div class="detail-icon" id="detail-icon">💡</div>
+                    <div>
+                        <div class="detail-title" id="detail-title">Nome</div>
+                        <div class="detail-category" id="detail-category">Categoria</div>
+                    </div>
+                </div>
+                <div class="detail-section">
+                    <div class="detail-section-title">Descrição</div>
+                    <div class="detail-description" id="detail-desc">Descrição...</div>
+                </div>
+                <div class="detail-section">
+                    <div class="detail-section-title">Conexões</div>
+                    <div class="connections" id="detail-connections"></div>
+                </div>
+                <div class="detail-section">
+                    <div class="detail-section-title">Tags</div>
+                    <div class="tags" id="detail-tags"></div>
                 </div>
             </div>
         </aside>
     </div>
-
-    <!-- Tooltip -->
-    <div class="node-tooltip" id="tooltip">
-        <div class="tooltip-title" id="tooltip-title">Node</div>
-        <div class="tooltip-desc" id="tooltip-desc">Description</div>
+    
+    <div class="tooltip" id="tooltip">
+        <div class="tooltip-title" id="tooltip-title"></div>
+        <div class="tooltip-desc" id="tooltip-desc"></div>
     </div>
 
     <script>
         // Memory Data
-        const memoryData = {
-            user: {
-                name: "Willian",
-                alias: "Walbarellos",
-                age: 30,
-                origin: "Brazil"
-            },
+        const data = {
             categories: [
-                { id: "identity", name: "Identity", color: "#00ff87", rgb: "0, 255, 135", icon: "👤" },
-                { id: "language", name: "Languages", color: "#00bbf9", rgb: "0, 187, 249", icon: "💬" },
-                { id: "interest", name: "Interests", color: "#c084fc", rgb: "192, 132, 252", icon: "❤️" },
-                { id: "tech", name: "Technologies", color: "#fb923c", rgb: "251, 146, 60", icon: "⚙️" }
+                { id: 'identity', name: 'Identidade', icon: '👤', color: '#00ff87' },
+                { id: 'language', name: 'Idiomas', icon: '💬', color: '#00bbf9' },
+                { id: 'interest', name: 'Interesses', icon: '❤️', color: '#c084fc' },
+                { id: 'tech', name: 'Tecnologias', icon: '⚙️', color: '#fb923c' }
             ],
             nodes: [
-                { id: "willian", label: "Willian", group: "identity", icon: "👤", 
-                  desc: "Full name: Willian. Known as Walbarellos on Linux. 30 years old, Brazilian developer.", 
-                  tags: ["personal", "primary"] },
-                { id: "brazil", label: "🇧🇷 Brazil", group: "identity", icon: "🌎", 
-                  desc: "Country of origin. Largest country in South America.", 
-                  tags: ["country", "home"] },
-                { id: "age", label: "30 Years", group: "identity", icon: "🎂", 
-                  desc: "Born approximately in 1996.", 
-                  tags: ["age", "demographic"] },
+                { id: 'willian', label: 'Willian', group: 'identity', icon: '👤', 
+                  desc: 'Desenvolvedor brasileiro, 30 anos, apaixonado por tecnologia.' },
+                { id: 'brazil', label: '🇧🇷 Brasil', group: 'identity', icon: '🌎', 
+                  desc: 'País de origem. Maior país da América do Sul.' },
+                { id: 'age', label: '30 Anos', group: 'identity', icon: '🎂', 
+                  desc: '30 anos, nascido em 1996.' },
                 
-                { id: "pt-br", label: "🇧🇷 Portuguese", group: "language", icon: "💬", 
-                  desc: "Native language from Brazil.", 
-                  tags: ["native", "fluent"] },
-                { id: "en-us", label: "🇺🇸 English", group: "language", icon: "🇺🇸", 
-                  desc: "Fluent in American English.", 
-                  tags: ["fluent"] },
-                { id: "hebrew", label: "🇮🇱 Hebrew", group: "language", icon: "✡️", 
-                  desc: "Speaks Hebrew.", 
-                  tags: ["hebrew"] },
-                { id: "es", label: "🇪🇸 Spanish", group: "language", icon: "🇪🇸", 
-                  desc: "Fluent in Spanish.", 
-                  tags: ["fluent"] },
+                { id: 'pt-br', label: 'Português', group: 'language', icon: '🇧🇷', 
+                  desc: 'Idioma nativo do Brasil.' },
+                { id: 'en-us', label: 'English', group: 'language', icon: '🇺🇸', 
+                  desc: 'Inglês americano fluente.' },
+                { id: 'hebrew', label: 'עברית', group: 'language', icon: '✡️', 
+                  desc: 'Hebraico - interesse ligado a Israel e Judaísmo.' },
+                { id: 'es', label: 'Español', group: 'language', icon: '🇪🇸', 
+                  desc: 'Espanhol fluente.' },
                 
-                { id: "software-eng", label: "💻 Software Eng.", group: "interest", icon: "⚙️", 
-                  desc: "Passionate about software engineering.", 
-                  tags: ["passion", "career"] },
-                { id: "anime", label: "🎌 Anime", group: "interest", icon: "📺", 
-                  desc: "Loves anime culture.", 
-                  tags: ["entertainment"] },
-                { id: "manga", label: "📚 Manga", group: "interest", icon: "📖", 
-                  desc: "Enjoys reading manga.", 
-                  tags: ["entertainment"] },
-                { id: "games", label: "🎮 Games", group: "interest", icon: "🕹️", 
-                  desc: "Passionate gamer.", 
-                  tags: ["hobby"] },
-                { id: "crypto", label: "₿ Crypto", group: "interest", icon: "📈", 
-                  desc: "Interested in cryptocurrencies.", 
-                  tags: ["finance"] },
-                { id: "israel", label: "🇮🇱 Israel", group: "interest", icon: "🕎", 
-                  desc: "Deep interest in Israeli culture.", 
-                  tags: ["culture"] },
-                { id: "judaism", label: "✡️ Judaism", group: "interest", icon: "📿", 
-                  desc: "Practicing or studying Judaism.", 
-                  tags: ["religion"] },
+                { id: 'software-eng', label: 'Software Eng.', group: 'interest', icon: '💻', 
+                  desc: 'Engenharia de software - paixão e carreira.' },
+                { id: 'anime', label: 'Anime', group: 'interest', icon: '📺', 
+                  desc: 'Cultura anime japonesa.' },
+                { id: 'manga', label: 'Manga', group: 'interest', icon: '📚', 
+                  desc: 'Leitura de mangás.' },
+                { id: 'games', label: 'Games', group: 'interest', icon: '🎮', 
+                  desc: 'Jogos eletrônicos.' },
+                { id: 'crypto', label: '₿ Crypto', group: 'interest', icon: '📈', 
+                  desc: 'Criptomoedas e blockchain.' },
+                { id: 'israel', label: '🇮🇱 Israel', group: 'interest', icon: '🕎', 
+                  desc: 'Interesse profundo na cultura israelense.' },
+                { id: 'judaism', label: '✡️ Judaísmo', group: 'interest', icon: '📿', 
+                  desc: 'Praticando ou estudando Judaísmo.' },
                 
-                { id: "arch", label: "🟢 Arch Linux", group: "tech", icon: "🐧", 
-                  desc: "Uses Arch Linux as primary OS.", 
-                  tags: ["os"] },
-                { id: "opencode", label: "⚡ OpenCode", group: "tech", icon: "⚡", 
-                  desc: "Uses OpenCode AI assistant.", 
-                  tags: ["ai"] },
-                { id: "mempalace", label: "🏛️ MemPalace", group: "tech", icon: "🏛️", 
-                  desc: "Uses MemPalace for memory.", 
-                  tags: ["memory"] },
-                { id: "hermes", label: "🤖 Hermes", group: "tech", icon: "🤖", 
-                  desc: "Uses Hermes AI agent.", 
-                  tags: ["ai"] },
-                { id: "vigilia", label: "🔮 Vigilia", group: "tech", icon: "🔮", 
-                  desc: "Development environment.", 
-                  tags: ["dev-env"] },
-                { id: "cli", label: "⌨️ CLI", group: "tech", icon: "💻", 
-                  desc: "Expert in command-line.", 
-                  tags: ["skills"] },
-                { id: "python", label: "🐍 Python", group: "tech", icon: "🐍", 
-                  desc: "Primary programming language.", 
-                  tags: ["language"] }
+                { id: 'arch', label: 'Arch Linux', group: 'tech', icon: '🐧', 
+                  desc: 'Sistema operacional principal.' },
+                { id: 'opencode', label: 'OpenCode', group: 'tech', icon: '⚡', 
+                  desc: 'Assistente de IA para código.' },
+                { id: 'mempalace', label: 'MemPalace', group: 'tech', icon: '🏛️', 
+                  desc: 'Gerenciamento de memória para IA.' },
+                { id: 'hermes', label: 'Hermes', group: 'tech', icon: '🤖', 
+                  desc: 'Agente de IA.' },
+                { id: 'vigilia', label: 'Vigilia', group: 'tech', icon: '🔮', 
+                  desc: 'Ambiente de desenvolvimento.' },
+                { id: 'cli', label: 'CLI', group: 'tech', icon: '⌨️', 
+                  desc: 'Expert em linha de comando.' },
+                { id: 'python', label: 'Python', group: 'tech', icon: '🐍', 
+                  desc: 'Linguagem principal.' }
             ],
             links: [
-                { source: "willian", target: "brazil" },
-                { source: "willian", target: "age" },
-                { source: "willian", target: "pt-br" },
-                { source: "willian", target: "en-us" },
-                { source: "willian", target: "hebrew" },
-                { source: "willian", target: "es" },
-                { source: "willian", target: "software-eng" },
-                { source: "willian", target: "arch" },
-                { source: "pt-br", target: "brazil" },
-                { source: "hebrew", target: "israel" },
-                { source: "hebrew", target: "judaism" },
-                { source: "software-eng", target: "python" },
-                { source: "software-eng", target: "cli" },
-                { source: "software-eng", target: "opencode" },
-                { source: "anime", target: "manga" },
-                { source: "games", target: "software-eng" },
-                { source: "crypto", target: "software-eng" },
-                { source: "israel", target: "judaism" },
-                { source: "arch", target: "cli" },
-                { source: "opencode", target: "mempalace" },
-                { source: "opencode", target: "hermes" },
-                { source: "mempalace", target: "vigilia" },
-                { source: "hermes", target: "vigilia" },
-                { source: "python", target: "mempalace" }
+                { source: 'willian', target: 'brazil' },
+                { source: 'willian', target: 'age' },
+                { source: 'willian', target: 'pt-br' },
+                { source: 'willian', target: 'en-us' },
+                { source: 'willian', target: 'hebrew' },
+                { source: 'willian', target: 'es' },
+                { source: 'willian', target: 'software-eng' },
+                { source: 'willian', target: 'arch' },
+                { source: 'pt-br', target: 'brazil' },
+                { source: 'hebrew', target: 'israel' },
+                { source: 'hebrew', target: 'judaism' },
+                { source: 'software-eng', target: 'python' },
+                { source: 'software-eng', target: 'cli' },
+                { source: 'software-eng', target: 'opencode' },
+                { source: 'anime', target: 'manga' },
+                { source: 'games', target: 'software-eng' },
+                { source: 'crypto', target: 'software-eng' },
+                { source: 'israel', target: 'judaism' },
+                { source: 'arch', target: 'cli' },
+                { source: 'opencode', target: 'mempalace' },
+                { source: 'opencode', target: 'hermes' },
+                { source: 'mempalace', target: 'vigilia' },
+                { source: 'hermes', target: 'vigilia' },
+                { source: 'python', target: 'mempalace' }
             ]
         };
-
-        // Three.js 3D
-        let scene, camera, renderer, nodes = [], links = [];
-        let selectedNode = null;
-        let autoRotate = false;
-
-        function init3D() {
-            const canvas = document.getElementById('network-canvas-3d');
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
-            
-            try {
-                renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-            } catch (e) {
-                console.warn('WebGL not available, switching to 2D mode');
-                document.getElementById('network-canvas-3d').style.display = 'none';
-                document.getElementById('network-canvas-2d').style.display = 'block';
-                document.querySelector('[data-mode="2d"]').classList.add('active');
-                document.querySelector('[data-mode="3d"]').classList.remove('active');
-                document.querySelector('.empty-state').innerHTML = '<div class="empty-icon">📊</div><div class="empty-title">Modo 2D Ativo</div><div class="empty-text">WebGL não disponível. Usando visualização 2D.</div>';
-                return;
-            }
-            
-            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            
-            camera.position.z = 30;
-            
-            // Lights
-            scene.add(new THREE.AmbientLight(0x404040, 0.5));
-            const p1 = new THREE.PointLight(0x00f5d4, 1, 100);
-            p1.position.set(10, 10, 10);
-            scene.add(p1);
-            
-            // Create nodes
-            const colors = {};
-            memoryData.categories.forEach(c => colors[c.id] = c.color);
-            
-            memoryData.nodes.forEach((node, i) => {
-                const color = colors[node.group];
-                const geo = new THREE.SphereGeometry(0.7, 32, 32);
-                const mat = new THREE.MeshPhongMaterial({ 
-                    color, 
-                    emissive: color, 
-                    emissiveIntensity: 0.3 
-                });
-                const mesh = new THREE.Mesh(geo, mat);
-                mesh.position.set(
-                    (Math.random() - 0.5) * 18,
-                    (Math.random() - 0.5) * 18,
-                    (Math.random() - 0.5) * 18
-                );
-                mesh.userData = node;
-                scene.add(mesh);
-                nodes.push(mesh);
-            });
-            
-            // Create links
-            memoryData.links.forEach(link => {
-                const s = nodes.find(n => n.userData.id === link.source);
-                const t = nodes.find(n => n.userData.id === link.target);
-                if (s && t) {
-                    const geo = new THREE.BufferGeometry().setFromPoints([s.position, t.position]);
-                    const mat = new THREE.LineBasicMaterial({ color: 0x00f5d4, transparent: true, opacity: 0.3 });
-                    const line = new THREE.Line(geo, mat);
-                    scene.add(line);
-                    links.push({ line, source: s, target: t });
-                }
-            });
-            
-            // Drag
-            let isDragging = false, prev = { x: 0, y: 0 };
-            canvas.addEventListener('mousedown', e => { isDragging = true; prev = { x: e.clientX, y: e.clientY }; });
-            canvas.addEventListener('mousemove', e => {
-                if (isDragging) {
-                    scene.rotation.y += (e.clientX - prev.x) * 0.005;
-                    scene.rotation.x += (e.clientY - prev.y) * 0.005;
-                    prev = { x: e.clientX, y: prev.y };
-                }
-            });
-            canvas.addEventListener('mouseup', () => isDragging = false);
-            canvas.addEventListener('wheel', e => {
-                camera.position.z = Math.max(10, Math.min(50, camera.position.z + e.deltaY * 0.01 * camera.position.z));
-            });
-            
-            animate3D();
-        }
-
-        function animate3D() {
-            requestAnimationFrame(animate3D);
-            if (autoRotate) scene.rotation.y += 0.002;
-            nodes.forEach((n, i) => n.position.y += Math.sin(Date.now() * 0.001 + i) * 0.008);
-            renderer.render(scene, camera);
-        }
-
-        // D3.js 2D
-        function init2D() {
-            const svg = d3.select('#network-canvas-2d');
-            const w = window.innerWidth - 600;
-            const h = window.innerHeight - 70;
-            
-            svg.attr('width', w).attr('height', h);
-            const g = svg.append('g');
-            
-            svg.call(d3.zoom().scaleExtent([0.1, 4]).on('zoom', e => g.attr('transform', e.transform)));
-            
-            const sim = d3.forceSimulation(memoryData.nodes)
-                .force('link', d3.forceLink(memoryData.links).id(d => d.id).distance(120))
-                .force('charge', d3.forceManyBody().strength(-350))
-                .force('center', d3.forceCenter(w / 2, h / 2))
-                .force('collision', d3.forceCollide().radius(45));
-            
-            const colors = {};
-            memoryData.categories.forEach(c => colors[c.id] = c.color);
-            
-            const linksG = g.append('g').selectAll('line').data(memoryData.links).join('line')
-                .attr('stroke', 'rgba(0,245,212,0.3)').attr('stroke-width', 2);
-            
-            const nodesG = g.append('g').selectAll('g').data(memoryData.nodes).join('g')
-                .call(d3.drag().on('start', (e, d) => { if (!e.active) sim.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
-                    .on('drag', (e, d) => { d.fx = e.x; d.fy = e.y; })
-                    .on('end', (e, d) => { if (!e.active) sim.alphaTarget(0); d.fx = null; d.fy = null; }));
-            
-            nodesG.append('circle').attr('r', 18).attr('fill', d => colors[d.group])
-                .attr('stroke', '#fff').attr('stroke-width', 2);
-            nodesG.append('text').text(d => d.icon).attr('text-anchor', 'middle').attr('dy', '0.35em').attr('font-size', '14px');
-            nodesG.append('text').text(d => d.label).attr('text-anchor', 'middle').attr('dy', '35px')
-                .attr('fill', '#fff').attr('font-size', '10px').attr('font-family', 'Orbitron, sans-serif');
-            
-            nodesG.on('click', (e, d) => updateDetailPanel(d));
-            
-            sim.on('tick', () => {
-                linksG.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
-                    .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
-                nodesG.attr('transform', d => `translate(${d.x},${d.y})`);
-            });
-        }
-
-        // UI
-        function updateDetailPanel(node) {
-            const cat = memoryData.categories.find(c => c.id === node.group);
-            const conns = memoryData.links.filter(l => l.source === node.id || l.target === node.id)
-                .map(l => l.source === node.id ? l.target : l.source);
-            
-            document.getElementById('detail-panel').innerHTML = `
-                <div class="detail-card">
-                    <div class="detail-header">
-                        <div class="detail-node-icon">${node.icon}</div>
-                        <div>
-                            <div class="detail-title">${node.label}</div>
-                            <div class="detail-subtitle">${cat?.name || ''}</div>
-                        </div>
-                    </div>
-                    <p class="detail-description">${node.desc}</p>
-                    <div class="detail-section-title">Connections</div>
-                    <div class="connections-list">
-                        ${conns.map(id => {
-                            const n = memoryData.nodes.find(x => x.id === id);
-                            return n ? `<span class="connection-tag">${n.icon} ${n.label}</span>` : '';
-                        }).join('')}
-                    </div>
-                    <div class="detail-section-title">Tags</div>
-                    <div class="tags-list">
-                        ${node.tags.map(t => `<span class="tag">#${t}</span>`).join('')}
-                    </div>
+        
+        // Initialize categories sidebar
+        const categoryCounts = {};
+        data.nodes.forEach(n => categoryCounts[n.group] = (categoryCounts[n.group] || 0) + 1);
+        
+        const categoriesEl = document.getElementById('categories');
+        data.categories.forEach(cat => {
+            const div = document.createElement('div');
+            div.className = 'category';
+            div.dataset.category = cat.id;
+            div.style.setProperty('--color', cat.color);
+            div.innerHTML = `
+                <div class="category-icon">${cat.icon}</div>
+                <div class="category-info">
+                    <div class="category-name">${cat.name}</div>
+                    <div class="category-count">${categoryCounts[cat.id] || 0} nós</div>
                 </div>
             `;
-        }
-
-        function populateCategories() {
-            const counts = {};
-            memoryData.nodes.forEach(n => counts[n.group] = (counts[n.group] || 0) + 1);
-            const max = Math.max(...Object.values(counts));
-            
-            document.getElementById('category-list').innerHTML = memoryData.categories.map(cat => `
-                <div class="category-item" data-category="${cat.id}" style="--category-color: ${cat.color}; --category-rgb: ${cat.rgb}">
-                    <div class="category-header">
-                        <div class="category-icon">${cat.icon}</div>
-                        <div>
-                            <div class="category-name">${cat.name}</div>
-                            <div class="category-count">${counts[cat.id] || 0} nodes</div>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-            
-            document.getElementById('node-count').textContent = memoryData.nodes.length;
-            document.getElementById('link-count').textContent = memoryData.links.length;
-        }
-
-        // Init
-        document.addEventListener('DOMContentLoaded', () => {
-            particlesJS('particles-js', {
-                particles: { number: { value: 60 }, color: { value: '#00f5d4' }, line_linked: { enable: true, distance: 150, color: '#00f5d4', opacity: 0.2 } }
-            });
-            
-            init3D();
-            init2D();
-            populateCategories();
-            
-            // Controls
-            document.getElementById('btn-auto-rotate').addEventListener('click', e => {
-                autoRotate = !autoRotate;
-                e.currentTarget.style.background = autoRotate ? 'var(--primary)' : '';
-            });
-            
-            // Mode toggle
-            document.querySelectorAll('.toggle-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    const mode = btn.dataset.mode;
-                    document.getElementById('network-canvas-3d').style.display = mode === '3d' ? 'block' : 'none';
-                    document.getElementById('network-canvas-2d').style.display = mode === '2d' ? 'block' : 'none';
-                });
-            });
-            
-            setTimeout(() => document.getElementById('loading').classList.add('hidden'), 1500);
+            div.addEventListener('click', () => filterByCategory(cat.id));
+            categoriesEl.appendChild(div);
         });
+        
+        // Stats
+        document.getElementById('node-count').textContent = data.nodes.length;
+        document.getElementById('link-count').textContent = data.links.length;
+        
+        // D3 Graph
+        const width = document.querySelector('.main').clientWidth;
+        const height = document.querySelector('.main').clientHeight;
+        
+        const svg = d3.select('#graph')
+            .attr('width', width)
+            .attr('height', height);
+        
+        const g = svg.append('g');
+        
+        // Zoom
+        const zoom = d3.zoom()
+            .scaleExtent([0.2, 4])
+            .on('zoom', (e) => g.attr('transform', e.transform));
+        
+        svg.call(zoom);
+        
+        // Simulation
+        const simulation = d3.forceSimulation(data.nodes)
+            .force('link', d3.forceLink(data.links).id(d => d.id).distance(100))
+            .force('charge', d3.forceManyBody().strength(-300))
+            .force('center', d3.forceCenter(width / 2, height / 2))
+            .force('collision', d3.forceCollide().radius(50));
+        
+        // Links
+        const link = g.append('g')
+            .selectAll('line')
+            .data(data.links)
+            .join('line')
+            .attr('class', 'link')
+            .attr('stroke-width', 2);
+        
+        // Nodes
+        const node = g.append('g')
+            .selectAll('g')
+            .data(data.nodes)
+            .join('g')
+            .attr('class', 'node')
+            .call(d3.drag()
+                .on('start', dragStarted)
+                .on('drag', dragged)
+                .on('end', dragEnded));
+        
+        // Node circles
+        node.append('circle')
+            .attr('r', 20)
+            .attr('fill', d => data.categories.find(c => c.id === d.group)?.color || '#fff')
+            .attr('stroke', '#fff')
+            .attr('stroke-width', 2);
+        
+        // Node icons
+        node.append('text')
+            .text(d => d.icon)
+            .attr('text-anchor', 'middle')
+            .attr('dy', '0.35em')
+            .attr('font-size', '14px');
+        
+        // Node labels
+        node.append('text')
+            .text(d => d.label)
+            .attr('dy', 35)
+            .attr('font-size', '11px')
+            .attr('fill', '#e6edf3')
+            .attr('text-anchor', 'middle');
+        
+        // Click handler
+        node.on('click', (event, d) => {
+            event.stopPropagation();
+            showDetail(d);
+            highlightConnections(d);
+        });
+        
+        // Hover handlers
+        node.on('mouseenter', (event, d) => showTooltip(event, d))
+              .on('mouseleave', hideTooltip);
+        
+        // Click outside to deselect
+        svg.on('click', () => {
+            hideDetail();
+            resetHighlight();
+        });
+        
+        // Tick
+        simulation.on('tick', () => {
+            link
+                .attr('x1', d => d.source.x)
+                .attr('y1', d => d.source.y)
+                .attr('x2', d => d.target.x)
+                .attr('y2', d => d.target.y);
+            
+            node.attr('transform', d => `translate(${d.x},${d.y})`);
+        });
+        
+        // Functions
+        function dragStarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+        
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+        
+        function dragEnded(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+        
+        function showDetail(d) {
+            const cat = data.categories.find(c => c.id === d.group);
+            const connections = data.links
+                .filter(l => l.source.id === d.id || l.target === d.id)
+                .map(l => l.source.id === d.id ? l.target : l.source);
+            
+            document.getElementById('detail-empty').style.display = 'none';
+            document.getElementById('detail-card').classList.add('show');
+            
+            document.getElementById('detail-icon').textContent = d.icon;
+            document.getElementById('detail-title').textContent = d.label;
+            document.getElementById('detail-category').textContent = cat?.name || '';
+            document.getElementById('detail-category').style.color = cat?.color || '';
+            document.getElementById('detail-desc').textContent = d.desc;
+            
+            const connEl = document.getElementById('detail-connections');
+            connEl.innerHTML = connections.map(id => {
+                const n = data.nodes.find(x => x.id === (typeof id === 'object' ? id.id : id));
+                return n ? `<span class="connection-tag" onclick="showDetail(data.nodes.find(x=>x.id==='${n.id}'))">${n.icon} ${n.label}</span>` : '';
+            }).join('');
+            
+            const tagsEl = document.getElementById('detail-tags');
+            tagsEl.innerHTML = `<span class="tag">#${d.group}</span><span class="tag">#${d.id}</span>`;
+        }
+        
+        function hideDetail() {
+            document.getElementById('detail-empty').style.display = 'flex';
+            document.getElementById('detail-card').classList.remove('show');
+        }
+        
+        function highlightConnections(d) {
+            const connectedIds = data.links
+                .filter(l => l.source.id === d.id || l.target === d.id)
+                .flatMap(l => [l.source.id, l.target.id]);
+            
+            node.style('opacity', n => 
+                n.id === d.id || connectedIds.includes(n.id) ? 1 : 0.2
+            );
+            link.style('opacity', l =>
+                l.source.id === d.id || l.target.id === d.id ? 1 : 0.1
+            );
+        }
+        
+        function resetHighlight() {
+            node.style('opacity', 1);
+            link.style('opacity', 0.6);
+        }
+        
+        function showTooltip(event, d) {
+            document.getElementById('tooltip-title').textContent = d.icon + ' ' + d.label;
+            document.getElementById('tooltip-desc').textContent = d.desc;
+            const tooltip = document.getElementById('tooltip');
+            tooltip.style.left = (event.pageX + 15) + 'px';
+            tooltip.style.top = (event.pageY - 15) + 'px';
+            tooltip.classList.add('show');
+        }
+        
+        function hideTooltip() {
+            document.getElementById('tooltip').classList.remove('show');
+        }
+        
+        function filterByCategory(catId) {
+            document.querySelectorAll('.category').forEach(el => {
+                el.classList.toggle('active', el.dataset.category === catId);
+            });
+            
+            node.style('opacity', d => catId === 'all' || d.group === catId ? 1 : 0.1);
+            link.style('opacity', d => 
+                catId === 'all' || d.source.group === catId || d.target.group === catId ? 0.6 : 0.05
+            );
+        }
+        
+        // Search
+        document.getElementById('search').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            node.style('opacity', d =>
+                !query || d.label.toLowerCase().includes(query) || d.desc.toLowerCase().includes(query) ? 1 : 0.1
+            );
+        });
+        
+        // Controls
+        function zoomIn() {
+            svg.transition().duration(300).call(zoom.scaleBy, 1.3);
+        }
+        
+        function zoomOut() {
+            svg.transition().duration(300).call(zoom.scaleBy, 0.7);
+        }
+        
+        function resetZoom() {
+            svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity);
+        }
+        
+        let showLabels = true;
+        function toggleLabels() {
+            showLabels = !showLabels;
+            node.selectAll('text:nth-child(3)').style('opacity', showLabels ? 1 : 0);
+        }
+        
+        // Center view
+        svg.call(zoom.transform, d3.zoomIdentity.translate(width/4, height/4).scale(0.9));
     </script>
 </body>
 </html>
