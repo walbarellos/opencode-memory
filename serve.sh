@@ -1,7 +1,7 @@
 #!/bin/bash
 # Memory Palace Server
 PORT="${1:-8080}"
-DIR="$HOME/.opencode-memory"
+DIR="$HOME/opencode-memory"
 
 echo "→ Servidor em http://localhost:$PORT"
 echo "Abra: http://localhost:$PORT/index.html"
