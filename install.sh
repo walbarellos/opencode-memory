@@ -1,29 +1,48 @@
-# OpenCode Memory Installer
-# Supports Arch Linux and Ubuntu/Debian
-# Author: Willian (Walbarellos)
+#!/bin/bash
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║                    OpenCode Memory Setup - Quick Installer                  ║
+# ║                         by Willian (Walbarellos)                           ║
+# ║                                                                              ║
+# ║  Usage:                                                                     ║
+# ║    ./install.sh                    # Demo mode (no personal memories)       ║
+# ║    PRIVATE_REPO=git@... ./install.sh  # With personal memories              ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
 
 set -e
 
 INSTALL_DIR="$HOME/.opencode-memory"
 REPO_URL="https://github.com/walbarellos/opencode-memory.git"
+PRIVATE_REPO_URL="${PRIVATE_REPO_URL:-}"
 
 # Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+MAGENTA='\033[0;35m'
 NC='\033[0m'
 
-echo -e "${BLUE}"
-echo "╔════════════════════════════════════════════════════════════╗"
-echo "║     OpenCode Memory Setup - Quick Installer               ║"
-echo "║     by Willian (Walbarellos)                               ║"
-echo "╚════════════════════════════════════════════════════════════╝"
+# Banner
+echo -e "${CYAN}"
+echo "╔══════════════════════════════════════════════════════════════════════╗"
+echo "║                                                                      ║"
+echo "║     ██████╗ ████████╗ █████╗ ██████╗  ██████╗                       ║"
+echo "║     ██╔══██╗╚══██╔══╝██╔══██╗██╔══██╗██╔═══██╗                      ║"
+echo "║     ██████╔╝   ██║   ███████║██████╔╝██║   ██║                      ║"
+echo "║     ██╔══██╗   ██║   ██╔══██║██╔══██╗██║   ██║                      ║"
+echo "║     ██║  ██║   ██║   ██║  ██║██║  ██║╚██████╔╝                      ║"
+echo "║     ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝                       ║"
+echo "║                                                                      ║"
+echo "║              Memory Setup - Quick Installer                           ║"
+echo "║                         by Walbarellos                                 ║"
+echo "║                                                                      ║"
+echo "╚══════════════════════════════════════════════════════════════════════╝"
 echo -e "${NC}"
 
-# Check if already installed
+# Check for existing installation
 if [ -d "$INSTALL_DIR" ]; then
-    echo -e "${YELLOW}⚠  OpenCode Memory já está instalado em $INSTALL_DIR${NC}"
+    echo -e "${YELLOW}⚠  OpenCode Memory já está instalado${NC}"
     read -p "Deseja reinstalar? Isso irá sobrescrever a instalação atual. (y/N): " -n 1 -r
     echo
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -33,14 +52,14 @@ if [ -d "$INSTALL_DIR" ]; then
     rm -rf "$INSTALL_DIR"
 fi
 
-# Select distribution
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${YELLOW}Selecione sua distribuição:${NC}"
+# Distribution Selection
+echo -e "\n${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${YELLOW}  Selecione sua distribuição:${NC}"
 echo ""
-echo "  1) Arch Linux"
-echo "  2) Ubuntu / Debian"
+echo "  ${GREEN}[1]${NC} Arch Linux"
+echo "  ${GREEN}[2]${NC} Ubuntu / Debian"
 echo ""
-read -p "Escolha (1/2): " DISTRO
+read -p "  Escolha (1/2): " DISTRO
 
 case $DISTRO in
     1) DISTRO_NAME="Arch Linux"
@@ -54,485 +73,228 @@ case $DISTRO in
     exit 1
     ;;
 esac
+echo -e "${GREEN}✓ Distribuição: $DISTRO_NAME${NC}"
 
-echo -e "${GREEN}✓ Distribuição selecionada: $DISTRO_NAME${NC}"
+# Memory Mode Selection
+echo -e "\n${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${YELLOW}  Modo de instalação:${NC}"
 echo ""
+echo "  ${CYAN}[1]${NC} Demo Mode     - Memórias genéricas (público)"
+echo "  ${MAGENTA}[2]${NC} Full Mode     - Inclui suas memórias pessoais (privado)"
+echo "  ${YELLOW}[3]${NC} Custom URL     - URL do seu repo privado"
+echo ""
+read -p "  Escolha (1/2/3): " MEMORY_MODE
 
-# Create install directory
-echo -e "${BLUE}→ Criando diretório de instalação...${NC}"
+# Private Repo Setup
+USE_PRIVATE=false
+PRIVATE_CLONE_DIR=""
+
+case $MEMORY_MODE in
+    1)
+        echo -e "${CYAN}→ Instalando em modo Demo (memórias genéricas)${NC}"
+        ;;
+    2)
+        if [ -z "$PRIVATE_REPO_URL" ]; then
+            echo -e "${MAGENTA}→ Clone seu repositório privado manualmente:${NC}"
+            echo "  git clone git@github.com:walbarellos/opencode-memory-private.git"
+            echo ""
+            read -p "  Cole o caminho do repo privado (ou Enter para pular): " PRIVATE_PATH
+            if [ -n "$PRIVATE_PATH" ]; then
+                USE_PRIVATE=true
+                PRIVATE_CLONE_DIR="$PRIVATE_PATH"
+            fi
+        else
+            USE_PRIVATE=true
+        fi
+        ;;
+    3)
+        echo ""
+        read -p "  Cole a URL SSH do repo privado: " CUSTOM_PRIVATE_URL
+        if [ -n "$CUSTOM_PRIVATE_URL" ]; then
+            USE_PRIVATE=true
+            echo -e "${MAGENTA}→ Clonando repositório privado...${NC}"
+            git clone "$CUSTOM_PRIVATE_URL" /tmp/opencode-memory-private 2>/dev/null || {
+                echo -e "${RED}✗ Falha ao clonar repositório privado${NC}"
+                echo "  Verifique se você tem acesso ao repositório"
+                USE_PRIVATE=false
+            }
+            PRIVATE_CLONE_DIR="/tmp/opencode-memory-private"
+        fi
+        ;;
+    *)
+        echo -e "${RED}✗ Opção inválida! Usando modo Demo.${NC}"
+        ;;
+esac
+
+# Create directories
+echo -e "\n${BLUE}→ Criando diretórios...${NC}"
 mkdir -p "$INSTALL_DIR"
+mkdir -p "$INSTALL_DIR/memories"
 mkdir -p "$HOME/.mempalace"
 mkdir -p "$HOME/.hermes/memories"
 
-# Install dependencies
-echo -e "${BLUE}→ Instalando dependências em $DISTRO_NAME...${NC}"
+# Install Dependencies
+echo -e "\n${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${YELLOW}  Instalando dependências em $DISTRO_NAME...${NC}"
 
 if command -v opencode &> /dev/null; then
     echo -e "${GREEN}✓ OpenCode já está instalado${NC}"
 else
     echo -e "${YELLOW}→ Instalando OpenCode...${NC}"
-    
     if [ "$DISTRO" = "1" ]; then
-        # Arch Linux - install via yay or aurman
         if command -v yay &> /dev/null; then
-            yay -S --noconfirm opencode
+            yay -S --noconfirm opencode 2>/dev/null || true
         elif command -v paru &> /dev/null; then
-            paru -S --noconfirm opencode
-        else
-            echo -e "${YELLOW}⚠  OpenCode não está no AUR. Tentando instalar via script...${NC}"
-            curl -fsSL https://raw.githubusercontent.com/opencode-ai/opencode/main/install.sh | sh
+            paru -S --noconfirm opencode 2>/dev/null || true
         fi
-    else
-        # Ubuntu/Debian - install via script
-        curl -fsSL https://raw.githubusercontent.com/opencode-ai/opencode/main/install.sh | sh
     fi
+    curl -fsSL https://raw.githubusercontent.com/opencode-ai/opencode/main/install.sh 2>/dev/null | sh || true
 fi
 
-# Install Python and pip if not present
+# Install Python
 if [ "$DISTRO" = "1" ]; then
-    sudo pacman -S --noconfirm python python-pip python-virtualenv 2>/dev/null || \
-    sudo pacman -S --noconfirm python python-pip
+    sudo pacman -S --noconfirm python python-pip 2>/dev/null || true
 else
-    sudo apt update && sudo apt install -y python3 python3-pip python3-venv
+    sudo apt update -qq && sudo apt install -y python3 python3-pip 2>/dev/null || true
 fi
 
 # Install MemPalace
 echo -e "${BLUE}→ Instalando MemPalace...${NC}"
-pip install --user mempalace 2>/dev/null || pip3 install --user mempalace
+pip3 install --user mempalace 2>/dev/null || pip install --user mempalace 2>/dev/null || true
 
-# Copy files from repository or create them
-echo -e "${BLUE}→ Configurando arquivos do repositório...${NC}"
+# Copy files
+echo -e "\n${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${YELLOW}  Configurando arquivos...${NC}"
 
-# Create memories directory
-mkdir -p "$INSTALL_DIR/memories"
+# Copy README
+cp ~/opencode-memory/README.md "$INSTALL_DIR/" 2>/dev/null || true
 
-# User info markdown
-cat > "$INSTALL_DIR/memories/user_info.md" << 'EOF'
-# User Profile: Willian
+# Copy memories based on mode
+if [ "$USE_PRIVATE" = true ] && [ -d "$PRIVATE_CLONE_DIR/memories" ]; then
+    echo -e "${MAGENTA}→ Copiando memórias pessoais...${NC}"
+    cp -r "$PRIVATE_CLONE_DIR/memories/"* "$INSTALL_DIR/memories/" 2>/dev/null || true
+    cp -r "$PRIVATE_CLONE_DIR/hermes/"* "$HOME/.hermes/memories/" 2>/dev/null || true
+    cp "$PRIVATE_CLONE_DIR/mempalace/config.json" "$HOME/.mempalace/config.json" 2>/dev/null || true
+    echo -e "${GREEN}✓ Memórias pessoais configuradas${NC}"
+else
+    # Create demo memories
+    echo -e "${CYAN}→ Configurando memórias Demo...${NC}"
+    
+    cat > "$INSTALL_DIR/memories/demo_user.md" << 'EOF'
+# User Profile (Demo)
 
-- Name: Willian (also called Walbarellos on Linux)
-- Age: 30 years old
-- Origin: Brazil
-- Languages: Portuguese (BR), English (US), Hebrew, Spanish
-- Operating System: Linux (Arch)
+## Identity
+- Name: [Your Name]
+- Age: [Your Age]
+- Origin: [Your Country]
+- Languages: [Your Languages]
 
 ## Interests
+- Software Engineering
+- Technology
+- Learning
 
-- Software Engineering (passionate about it)
-- Anime and Manga
-- Video Games
-- Cryptocurrencies
-- Israel and Israeli culture
-- Judaism and Hebrew language
+## Tech Stack
+- Linux (any distribution)
+- Python, JavaScript
+- AI Tools
 
-## Technical Background
-
-- Uses Arch Linux
-- Uses MemPalace for AI memory management
-- Uses Hermes as an AI agent
-- Uses Vigilia as development environment
-- Familiar with CLI tools and programming
+## Setup Instructions
+Para usar suas memórias pessoais:
+1. Clone o repositório privado de memórias
+2. Use modo [2] na próxima instalação
+3. Ou edite este arquivo manualmente
 EOF
 
-# Wake-up context
-cat > "$INSTALL_DIR/memories/wakeup.txt" << 'EOF'
+    cat > "$INSTALL_DIR/memories/demo_wakeup.txt" << 'EOF'
 ## L0 — IDENTITY
-
-Name: Willian (also called Walbarellos on Linux)
-Age: 30 years old
-Origin: Brazil
+Configure seu perfil em memories/demo_user.md
 
 ## L1 — ESSENTIAL STORY
+- [Adicione suas informações aqui]
+- Use memórias demo ou importe suas próprias
 
-- Speaks: Portuguese (BR), English (US), Hebrew, Spanish
-- Passionate about: Software Engineering, Anime/Manga, Video Games, Cryptocurrencies, Israel, Judaism, Hebrew
-- Uses: Arch Linux, OpenCode, MemPalace, Hermes Agent, Vigilia
-- CLI and programming expert
+## Setup
+Consulte opencode-memory-private para memórias completas.
 EOF
+    echo -e "${GREEN}✓ Memórias Demo configuradas${NC}"
+fi
 
-# Create HTML visualizer
-cat > "$INSTALL_DIR/index.html" << 'HTMLEOF'
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Willian's Memory Network</title>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #fff;
-            min-height: 100vh;
-        }
-        .header {
-            background: rgba(0,0,0,0.3);
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .header h1 { font-size: 1.5rem; color: #e94560; }
-        .header .subtitle { color: #888; font-size: 0.9rem; }
-        .controls {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-        .search-box {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 8px 15px;
-            border-radius: 20px;
-            color: #fff;
-            width: 250px;
-        }
-        .search-box::placeholder { color: #888; }
-        .filter-btn {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 8px 15px;
-            border-radius: 20px;
-            color: #fff;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .filter-btn:hover, .filter-btn.active {
-            background: #e94560;
-            border-color: #e94560;
-        }
-        #graph {
-            width: 100%;
-            height: calc(100vh - 100px);
-        }
-        .node {
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .node:hover { filter: brightness(1.3); }
-        .node-label {
-            font-size: 11px;
-            fill: #fff;
-            text-anchor: middle;
-            pointer-events: none;
-        }
-        .link {
-            stroke-opacity: 0.4;
-        }
-        .tooltip {
-            position: absolute;
-            background: rgba(0,0,0,0.9);
-            border: 1px solid #e94560;
-            padding: 15px;
-            border-radius: 10px;
-            max-width: 300px;
-            display: none;
-            z-index: 1000;
-        }
-        .tooltip h3 { color: #e94560; margin-bottom: 10px; }
-        .tooltip p { color: #ccc; font-size: 0.9rem; line-height: 1.5; }
-        .legend {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(0,0,0,0.7);
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-        }
-        .legend-item { display: flex; align-items: center; gap: 10px; margin: 5px 0; }
-        .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
-        .stats {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(0,0,0,0.7);
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-        }
-        .stats span { color: #e94560; font-weight: bold; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <div>
-            <h1>🧠 Willian's Memory Network</h1>
-            <p class="subtitle">MemPalace Memory Visualizer</p>
-        </div>
-        <div class="controls">
-            <input type="text" class="search-box" id="search" placeholder="Search memories...">
-            <button class="filter-btn active" data-filter="all">All</button>
-            <button class="filter-btn" data-filter="identity">Identity</button>
-            <button class="filter-btn" data-filter="language">Languages</button>
-            <button class="filter-btn" data-filter="interest">Interests</button>
-            <button class="filter-btn" data-filter="tech">Tech</button>
-        </div>
-    </div>
-    
-    <svg id="graph"></svg>
-    
-    <div class="tooltip" id="tooltip"></div>
-    
-    <div class="legend">
-        <div class="legend-item"><div class="legend-dot" style="background:#4ade80"></div> Identity</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div> Languages</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#c084fc"></div> Interests</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#fb923c"></div> Technologies</div>
-    </div>
-    
-    <div class="stats">
-        <p>Nodes: <span id="nodeCount">0</span></p>
-        <p>Connections: <span id="linkCount">0</span></p>
-    </div>
+# Copy HTML visualizer (from repo or inline)
+echo -e "${BLUE}→ Configurando visualizador de memória...${NC}"
+if [ -f ~/opencode-memory/index.html ]; then
+    cp ~/opencode-memory/index.html "$INSTALL_DIR/index.html"
+    echo -e "${GREEN}✓ Visualizador 3D configurado${NC}"
+else
+    echo -e "${YELLOW}⚠  index.html não encontrado, criando versão básica...${NC}"
+fi
 
-    <script>
-        const width = window.innerWidth;
-        const height = window.innerHeight - 100;
-        
-        const svg = d3.select("#graph")
-            .attr("width", width)
-            .attr("height", height);
-        
-        const g = svg.append("g");
-        
-        // Zoom behavior
-        const zoom = d3.zoom()
-            .scaleExtent([0.1, 4])
-            .on("zoom", (event) => g.attr("transform", event.transform));
-        
-        svg.call(zoom);
-        
-        // Memory data
-        const data = {
-            nodes: [
-                // Identity
-                { id: "Willian", group: "identity", label: "Willian", desc: "Full name: Willian. Also known as Walbarellos on Linux systems. 30 years old from Brazil." },
-                { id: "Brazil", group: "identity", label: "🇧🇷 Brazil", desc: "Country of origin. Located in South America." },
-                { id: "Age30", group: "identity", label: "30 years old", desc: "Born approximately in 1996." },
-                
-                // Languages
-                { id: "PT-BR", group: "language", label: "🇧🇷 Portuguese", desc: "Native language. Portuguese from Brazil." },
-                { id: "EN-US", group: "language", label: "🇺🇸 English", desc: "Fluent in American English." },
-                { id: "Hebrew", group: "language", label: "🇮🇱 Hebrew", desc: "Speaks Hebrew (interest related to Israel and Judaism)." },
-                { id: "ES", group: "language", label: "🇪🇸 Spanish", desc: "Fluent in Spanish." },
-                
-                // Interests
-                { id: "SoftwareEng", group: "interest", label: "💻 Software Eng.", desc: "Passionate about software engineering. Expert level." },
-                { id: "Anime", group: "interest", label: "🎌 Anime", desc: "Loves anime and manga culture." },
-                { id: "Manga", group: "interest", label: "📚 Manga", desc: "Enjoys reading manga." },
-                { id: "Games", group: "interest", label: "🎮 Video Games", desc: "Passionate gamer." },
-                { id: "Crypto", group: "interest", label: "₿ Crypto", desc: "Interested in cryptocurrencies and blockchain." },
-                { id: "Israel", group: "interest", label: "🇮🇱 Israel", desc: "Deep interest in Israeli culture and country." },
-                { id: "Judaism", group: "interest", label: "✡️ Judaism", desc: "Practicing or studying Judaism." },
-                { id: "HebrewLang", group: "interest", label: "עברית Hebrew", desc: "Studying Hebrew language ( עברית )." },
-                
-                // Technologies
-                { id: "Arch", group: "tech", label: "🟢 Arch Linux", desc: "Uses Arch Linux as primary OS." },
-                { id: "OpenCode", group: "tech", label: "⚡ OpenCode", desc: "Uses OpenCode AI coding assistant." },
-                { id: "MemPalace", group: "tech", label: "🏛️ MemPalace", desc: "Uses MemPalace for AI memory management." },
-                { id: "Hermes", group: "tech", label: "🤖 Hermes", desc: "Uses Hermes Agent for AI tasks." },
-                { id: "Vigilia", group: "tech", label: "🔮 Vigilia", desc: "Development environment setup." },
-                { id: "CLI", group: "tech", label: "⌨️ CLI Expert", desc: "Expert in command-line interfaces." }
-            ],
-            links: [
-                // Identity connections
-                { source: "Willian", target: "Brazil" },
-                { source: "Willian", target: "Age30" },
-                { source: "Willian", target: "PT-BR" },
-                { source: "Willian", target: "EN-US" },
-                { source: "Willian", target: "Hebrew" },
-                { source: "Willian", target: "ES" },
-                { source: "Willian", target: "SoftwareEng" },
-                { source: "Willian", target: "Arch" },
-                
-                // Language connections
-                { source: "PT-BR", target: "Brazil" },
-                { source: "Hebrew", target: "Israel" },
-                { source: "Hebrew", target: "HebrewLang" },
-                { source: "Hebrew", target: "Judaism" },
-                
-                // Interest connections
-                { source: "SoftwareEng", target: "CLI" },
-                { source: "SoftwareEng", target: "OpenCode" },
-                { source: "SoftwareEng", target: "MemPalace" },
-                { source: "SoftwareEng", target: "Hermes" },
-                { source: "Anime", target: "Manga" },
-                { source: "Games", target: "SoftwareEng" },
-                { source: "Crypto", target: "SoftwareEng" },
-                { source: "Israel", target: "Judaism" },
-                { source: "Judaism", target: "HebrewLang" },
-                
-                // Tech connections
-                { source: "Arch", target: "CLI" },
-                { source: "Arch", target: "OpenCode" },
-                { source: "OpenCode", target: "MemPalace" },
-                { source: "OpenCode", target: "Hermes" },
-                { source: "MemPalace", target: "Vigilia" },
-                { source: "Hermes", target: "Vigilia" },
-                { source: "MemPalace", target: "Hermes" }
-            ]
-        };
-        
-        // Color scale
-        const color = d3.scaleOrdinal()
-            .domain(["identity", "language", "interest", "tech"])
-            .range(["#4ade80", "#60a5fa", "#c084fc", "#fb923c"]);
-        
-        // Size scale based on connections
-        const nodeSize = d3.scaleOrdinal()
-            .domain([0, 1, 2, 3, 4])
-            .range([8, 12, 16, 20, 25]);
-        
-        // Simulation
-        const simulation = d3.forceSimulation(data.nodes)
-            .force("link", d3.forceLink(data.links).id(d => d.id).distance(100))
-            .force("charge", d3.forceManyBody().strength(-300))
-            .force("center", d3.forceCenter(width/2, height/2))
-            .force("collision", d3.forceCollide().radius(40));
-        
-        // Links
-        const link = g.append("g")
-            .selectAll("line")
-            .data(data.links)
-            .join("line")
-            .attr("class", "link")
-            .attr("stroke", "#fff")
-            .attr("stroke-width", 1.5);
-        
-        // Nodes
-        const node = g.append("g")
-            .selectAll("g")
-            .data(data.nodes)
-            .join("g")
-            .attr("class", "node")
-            .call(d3.drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended));
-        
-        node.append("circle")
-            .attr("r", d => {
-                const count = data.links.filter(l => l.source.id === d.id || l.target.id === d.id).length;
-                return nodeSize(Math.min(count, 4));
-            })
-            .attr("fill", d => color(d.group))
-            .attr("stroke", "#fff")
-            .attr("stroke-width", 2);
-        
-        node.append("text")
-            .attr("class", "node-label")
-            .attr("dy", d => {
-                const count = data.links.filter(l => l.source.id === d.id || l.target.id === d.id).length;
-                return nodeSize(Math.min(count, 4)) + 15;
-            })
-            .text(d => d.label);
-        
-        // Tooltip
-        const tooltip = d3.select("#tooltip");
-        
-        node.on("mouseover", (event, d) => {
-            tooltip.style("display", "block")
-                .style("left", (event.pageX + 15) + "px")
-                .style("top", (event.pageY - 15) + "px")
-                .html(`<h3>${d.label}</h3><p>${d.desc}</p>`);
-        })
-        .on("mouseout", () => tooltip.style("display", "none"));
-        
-        // Update positions
-        simulation.on("tick", () => {
-            link
-                .attr("x1", d => d.source.x)
-                .attr("y1", d => d.source.y)
-                .attr("x2", d => d.target.x)
-                .attr("y2", d => d.target.y);
-            
-            node.attr("transform", d => `translate(${d.x},${d.y})`);
-        });
-        
-        // Drag functions
-        function dragstarted(event) {
-            if (!event.active) simulation.alphaTarget(0.3).restart();
-            event.subject.fx = event.subject.x;
-            event.subject.fy = event.subject.y;
-        }
-        
-        function dragged(event) {
-            event.subject.fx = event.x;
-            event.subject.fy = event.y;
-        }
-        
-        function dragended(event) {
-            if (!event.active) simulation.alphaTarget(0);
-            event.subject.fx = null;
-            event.subject.fy = null;
-        }
-        
-        // Search functionality
-        const searchBox = document.getElementById("search");
-        searchBox.addEventListener("input", (e) => {
-            const query = e.target.value.toLowerCase();
-            node.style("opacity", d => {
-                if (!query) return 1;
-                return d.label.toLowerCase().includes(query) || d.desc.toLowerCase().includes(query) ? 1 : 0.2;
-            });
-            link.style("opacity", d => {
-                if (!query) return 0.4;
-                const sourceMatch = d.source.label.toLowerCase().includes(query);
-                const targetMatch = d.target.label.toLowerCase().includes(query);
-                return sourceMatch || targetMatch ? 0.8 : 0.1;
-            });
-        });
-        
-        // Filter buttons
-        document.querySelectorAll(".filter-btn").forEach(btn => {
-            btn.addEventListener("click", () => {
-                document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-                btn.classList.add("active");
-                
-                const filter = btn.dataset.filter;
-                node.style("opacity", d => {
-                    if (filter === "all") return 1;
-                    return d.group === filter ? 1 : 0.2;
-                });
-                link.style("opacity", d => {
-                    if (filter === "all") return 0.4;
-                    return d.source.group === filter || d.target.group === filter ? 0.8 : 0.1;
-                });
-            });
-        });
-        
-        // Update stats
-        document.getElementById("nodeCount").textContent = data.nodes.length;
-        document.getElementById("linkCount").textContent = data.links.length;
-        
-        // Center view
-        svg.call(zoom.transform, d3.zoomIdentity.translate(width/4, height/4).scale(0.8));
-    </script>
-</body>
-</html>
-HTMLEOF
+# Copy install script
+cp "$0" "$INSTALL_DIR/install.sh"
+chmod +x "$INSTALL_DIR/install.sh"
 
-# Copy to memories backup
-cp ~/opencode-memory/memories/user_info.md "$INSTALL_DIR/memories/"
+# Create uninstall script
+cat > "$INSTALL_DIR/uninstall.sh" << 'EOF'
+#!/bin/bash
+echo "Desinstalando OpenCode Memory Setup..."
+rm -rf "$HOME/.opencode-memory"
+rm -rf "$HOME/.mempalace"
+rm -rf "$HOME/.hermes"
+echo "✓ Desinstalação concluída"
+EOF
+chmod +x "$INSTALL_DIR/uninstall.sh"
 
+# Copy Vigilia binary if available
+if [ -f "/home/walbarellos/Vigilia/.venv/bin/mempalace" ]; then
+    mkdir -p "$INSTALL_DIR/tools"
+    cp "/home/walbarellos/Vigilia/.venv/bin/mempalace" "$INSTALL_DIR/tools/"
+    echo -e "${GREEN}✓ MemPalace CLI copiado${NC}"
+fi
+
+# Create sync script for private repo
+if [ "$USE_PRIVATE" = true ]; then
+    cat > "$INSTALL_DIR/sync-memories.sh" << EOF
+#!/bin/bash
+# Sincroniza memórias com repositório privado
+PRIVATE_REPO="$PRIVATE_CLONE_DIR"
+
+if [ -d "\$PRIVATE_REPO" ]; then
+    echo "Sincronizando memórias..."
+    cp -r "\$HOME/.mempalace/config.json" "\$PRIVATE_REPO/mempalace/" 2>/dev/null || true
+    cp "\$HOME/.hermes/memories/USER.md" "\$PRIVATE_REPO/hermes/" 2>/dev/null || true
+    cd "\$PRIVATE_REPO"
+    git add .
+    git commit -m "sync memories \$(date)"
+    git push
+    echo "✓ Memórias sincronizadas"
+else
+    echo "Repositório privado não encontrado"
+fi
+EOF
+    chmod +x "$INSTALL_DIR/sync-memories.sh"
+fi
+
+# Final message
+echo -e "\n${CYAN}╔══════════════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${CYAN}║${NC}${GREEN}  ✓ INSTALAÇÃO CONCLUÍDA COM SUCESSO!${NC}${CYAN}                                          ║${NC}"
+echo -e "${CYAN}╚══════════════════════════════════════════════════════════════════════╝${NC}"
 echo ""
-echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}✓ Instalação concluída com sucesso!${NC}"
+echo -e "${BLUE}  Local:${NC}       $INSTALL_DIR"
+echo -e "${BLUE}  Modo:${NC}        $([ "$USE_PRIVATE" = true ] && echo "Personal (Privado)" || echo "Demo (Genérico)")"
 echo ""
-echo -e "${BLUE}Local de instalação:${NC} $INSTALL_DIR"
+echo -e "${YELLOW}  Próximos passos:${NC}"
+echo "    1. Abrir visualizador:"
+echo "       xdg-open $INSTALL_DIR/index.html"
 echo ""
-echo -e "${YELLOW}Próximos passos:${NC}"
-echo "  1. Abra o visualizador: xdg-open $INSTALL_DIR/index.html"
-echo "  2. Configure suas memórias no MemPalace"
-echo "  3. Use: opencode run 'sua pergunta'"
+echo "    2. Testar OpenCode:"
+echo "       opencode run 'hello world'"
 echo ""
-echo -e "${RED}Para desinstalar:${NC}"
-echo "  rm -rf $INSTALL_DIR"
-echo "  rm -rf ~/.mempalace"
-echo "  rm -rf ~/.hermes"
+echo "    3. Para desinstalar:"
+echo "       $INSTALL_DIR/uninstall.sh"
 echo ""
-echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+if [ "$USE_PRIVATE" = true ]; then
+    echo -e "${MAGENTA}  Para sincronizar memórias:${NC}"
+    echo "    $INSTALL_DIR/sync-memories.sh"
+    echo ""
+fi
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"

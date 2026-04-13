@@ -4,11 +4,7 @@ Thumbs.db
 
 # Logs
 *.log
-
-# Temporary files
 *.tmp
-*.swp
-*~
 
 # Python
 __pycache__/
@@ -24,3 +20,14 @@ venv/
 # Backup
 *.bak
 *.backup
+
+# Sensíveis - NÃO COMMITAR
+memories/*.md
+memories/*.txt
+!memories/demo_*.md
+!memories/.gitkeep
+
+# Locais
+.local/
+.config/
+.cache/
